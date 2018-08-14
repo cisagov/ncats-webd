@@ -1,0 +1,53 @@
+{% extends "base_template.html" %}
+{% block title %}BOD{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/c3.min.js"></script>
+    <link href="/static/css/c3.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="large-12 columns">
+            <h1>Binding Operational Directive Status</h1>
+        </div>
+    </div>
+    <p></p>
+    <div class="row">
+        <div class="large-12 columns">
+            <h3 class="subheader">The binding operation directive was issued by DHS on May 21, 2015.  The vulnerabilities related to this directive can be tracked below.</h3>
+        </div>
+    </div>
+    <p></p>
+    <hr>
+    <div class="row">
+        <div class="large-12 columns">
+            <h2>Critical Vulnerability BOD Age and Backlog History</h2>
+        </div>
+    </div>
+    <div class="row">
+      <div class="large-12 columns">
+          {% include 'bod_chart1.html' %}
+      </div>
+    </div>
+    <p></p>
+    <div class="row">
+      <div class="small-5 columns small-centered">
+          <a href="?c1" class="button tiny radius"><i class="fi-page-export-csv">​</i> ​Download Graph CSV</a>
+          <a href="?c2" class="button tiny radius"><i class="fi-page-export-csv">​</i> ​Download Tickets CSV</a>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="large-12 columns">
+            <h2>Current Vulnerability BOD Age Distribution</h2>
+        </div>
+    </div>
+    <div class="row">
+      <div class="large-12 columns">
+          {% include 'bod_chart2.html' %}
+      </div>
+    </div>
+    <p></p>
+    <hr>
+{% include 'bod_chart.js' %}
+{% endblock %}

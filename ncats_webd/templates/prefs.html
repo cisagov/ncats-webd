@@ -1,0 +1,58 @@
+{% extends "base_template.html" %}
+{% block title %}Preferences{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="large-12 columns">
+            <h1>Preferences</h1>
+            <div class="hide"><span class="alert-box success"><i class="fi-check"></i> Saved</span></div>
+        </div>
+    </div>
+    <form data-abide>
+        <div class="row">
+            <div class="large-12 columns">
+                <fieldset>
+                    <legend>Presentation Controls</legend>
+                    <div class="row">
+                        <div class="large-4 columns">
+                            <input type="checkbox" id="censor_names" name="censor_names" onchange="toggleCookie(this)">
+                            <label for="censor_names"><span class="has-tip" title="When selected, the names of stakeholders on the dashboard will be heavily blurred.  This is useful for presenting the dashboard data without disclosing stakeholder details.  Careful:  Hovering over the blurred name will disclose its identity with a tooltip." data-tooltip="" data-width="300">Blur stakeholder names</span></label>
+                        </div>
+                        <div class="large-4 columns">
+                            <input type="checkbox" id="cycle_pages" name="cycle_pages" onchange="toggleCookie(this)">
+                            <label for="cycle_pages"><span class="has-tip" title="Rotate between the dashboard and map views." data-tooltip="" data-width="300">Cycle dashboard and map</span></label>
+                        </div>
+                        <div class="large-4 columns">
+                            <label>Page Cycle Delay <small>required</small>
+                                <input type="integer" id="cycle_delay" name="cycle_delay" required placeholder="seconds" onchange="saveInput(this)"/>
+                            </label>
+                            <small class="error">Enter the time in seconds between page changes.</small>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="large-2 columns small-centered">
+                <input type="submit" name="my-form" value="Save" class="button">
+            </div>
+        </div> -->
+    </form>
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script>                
+        function toggleCookie(element){
+            $.cookie(element.id, element.checked, {path:'/'});
+        }
+        
+        function saveInput(element){
+            $.cookie(element.id, element.value, {path:'/'});
+        }
+        
+        $('#censor_names')[0].checked = $.cookie('censor_names') == 'true';
+        $('#cycle_pages')[0].checked = $.cookie('cycle_pages') == 'true';
+        $('#cycle_delay')[0].value = $.cookie('cycle_delay') || 300;
+    </script>
+{% endblock %}

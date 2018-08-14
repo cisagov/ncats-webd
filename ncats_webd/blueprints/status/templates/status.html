@@ -1,0 +1,212 @@
+{% extends "base_template.html" %}
+{% block title %}Scan Progress{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="static/bullet.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="static/style.css" />
+{% endblock %}
+{% block body %}
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Scan Progress</h1>
+        <dl class="sub-nav">
+            <dt>Filter:</dt>
+            <dd id="dd-all" class="active"><a href="javascript:change_view(1)">All</a></dd>
+            <dd id="dd-recent"><a href="javascript:change_view(0)">Recent</a></dd>
+            <dd id="dd-now"><a href="javascript:change_view(2)">Now</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class='placeholder'></div>
+    <script type="text/javascript">
+
+    var DATA_URL_RECENT = '?j&maxage=259200' // 3 days
+    var DATA_URL_ALL = '?j'
+    var DATA_URL_NOW = '?j&maxage=60'
+    var DATA_URL = DATA_URL_ALL
+    var REFRESH_INTERVAL = 30000
+
+    // Load the scan data asynchronously.
+    d3.json(DATA_URL, update);
+
+    // And redraw on an interval
+    setInterval(
+        function()
+        {
+            d3.json(DATA_URL, update)
+        }, REFRESH_INTERVAL
+    );
+
+    d3.selectAll("button").on("click", function() {
+      d3.json(DATA_URL, update)
+    });
+
+    var commaFormatter = d3.format(",")
+    var dateFormatter = d3.time.format('%Y-%m-%d %H:%M');
+    var STAGES = ['NETSCAN1','NETSCAN2','PORTSCAN','VULNSCAN','BASESCAN']
+    var STATUS = ['WAITING','READY','RUNNING','DONE']
+
+    var margin = {top: 5, right: 40, bottom: 20, left: 120},
+        width = 960 - margin.left - margin.right,
+        height = 50 - margin.top - margin.bottom,
+        CHART_SPACING = 24;
+
+    var chart = d3.bullet()
+        .width(width)
+        .height(height);
+
+    function change_view(i){
+        switch(i)
+        {
+            case 0:
+                DATA_URL = DATA_URL_RECENT;
+                d3.select("body").attr("class", "");
+                document.getElementById("dd-all").className = "";
+                document.getElementById("dd-recent").className = "active";
+                document.getElementById("dd-now").className = "";
+                break;
+            case 1:
+                DATA_URL = DATA_URL_ALL;
+                document.getElementById("dd-all").className = "active";
+                document.getElementById("dd-recent").className = "";
+                document.getElementById("dd-now").className = "";
+                break;
+            case 2:
+                DATA_URL = DATA_URL_NOW;
+                document.getElementById("dd-all").className = "";
+                document.getElementById("dd-recent").className = "";
+                document.getElementById("dd-now").className = "active";
+                break;
+        }
+        d3.json(DATA_URL, update);
+    }
+
+    function calculateRanges(scanData, doneCount){
+        // calculate the ranges given a single scan, and whether the scan has completed.
+        // ranges represent the remaining IPs/Hosts to scan in each stage
+        // WAITING + READY + RUNNING
+        var listOfRanges = [doneCount];
+        var startOfRange = doneCount;
+        var endOfRange;
+        var scanCompleted = true;
+        for (var i = 0; i < STAGES.length; i++){
+            var count = 0;
+            for (var j = 0; j < STATUS.length - 1; j++){
+                count += scanData.counts[STAGES[i]][STATUS[j]];
+            }
+            // determine if the scan has completed
+            if (count > 0) {
+                scanCompleted = false;
+            }
+            endOfRange = startOfRange + count;
+            listOfRanges.push(endOfRange);
+            startOfRange = endOfRange;
+        }
+        return [listOfRanges, scanCompleted];
+    }
+
+    function calculateMeasures(scanData){
+        // calculate the measures given a single scan
+        // measures represent the completed and running IPs/Hosts
+        // DONE, RUNNING
+        var done = 0;
+        var running = 0;
+        for (var i = 0; i < STAGES.length; i++){
+            done += scanData.counts[STAGES[i]]['DONE'];
+            running += scanData.counts[STAGES[i]]['RUNNING'];
+        }
+        running += done;
+        return [done, running];
+    }
+
+    function bottomOfH1(){
+        var placeholder = d3.select('div.placeholder');
+        placeholder = placeholder[0][0];
+        return  placeholder.offsetTop + placeholder.offsetHeight + CHART_SPACING * 2;
+    }
+
+    function calculateChartTop(d, i){
+        return i * (height + CHART_SPACING) + bottomOfH1();
+    }
+
+    function update(error, jsonData)
+    {
+        if (error) {
+            return console.warn(error);
+        }
+        //Massage jsonData to something the bullet chart would like
+        var bullets = [];
+        for (var i = 0; i < jsonData.length; i++){
+            d = jsonData[i];
+            bulletData = {};
+            //Convert date
+            bulletData['last_change'] = new Date(Date.parse(d['last_change']));
+            bulletData['title'] = d['_id'];
+            bulletData['subtitle'] = dateFormatter(bulletData['last_change']);
+            measures = calculateMeasures(d);
+            bulletData['measures'] = measures;
+            // not all browsers support destructuring assignment
+            c = calculateRanges(d, measures[0]);
+            bulletData['ranges'] = c[0];
+            bulletData['completed']= c[1];
+            bulletData['markers'] = [0]; //TODO: make bullet object accept no markers
+            bullets.push(bulletData);
+        }
+
+        // sort data by last_change date
+        bullets.sort(function(i,j) {return j.last_change-i.last_change;});
+
+        //BIND
+        var svg = d3.select("body").selectAll("svg")
+            .data(bullets, function(d) { return d.title; });
+
+        //ENTER
+        var svgEnter=svg.enter().append("svg")
+          .attr("class", "bullet")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .style('top', calculateChartTop)
+          .append('a')
+          .attr('xlink:href', function(d) {return encodeURIComponent(encodeURIComponent(d.title));})
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(chart);
+
+        var title = svgEnter.append("g")
+          .style("text-anchor", "end")
+          .attr("transform", "translate(-6," + height / 2 + ")");
+
+        title.
+           append('a')
+            .attr('xlink:href', function(d) {return encodeURIComponent(encodeURIComponent(d.title));})
+            .append("text")
+                .attr('class', 'title-active')
+                .text(function(d) { return d.title; });
+
+        title.append("text")
+          .attr("class", "subtitle")
+          .attr("dy", "1em")
+          .text(function(d) { return d.subtitle; });
+
+        //UPDATE
+        svg.select('text.subtitle')
+            .text(function(d) { return d.subtitle; })
+
+        svg.select('text.title-active, text.title-completed')
+            .attr("class", function(d) {return d.completed ? 'title-completed' : 'title-active'; })
+
+        svg.transition()
+            .duration(1000)
+            .style('top', calculateChartTop)
+            .call(chart.duration(1000));
+
+        //EXIT
+        svg.exit()
+            .transition()
+                .duration(750)
+                .style("fill-opacity", 1e-6)
+            .remove();
+    }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends "base_template.html" %}
+{% block title %}{{ acronym }} Details{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block body %}
+    <script type="text/javascript">
+    // Load the agency data asynchronously.
+    // Draw now
+    d3.json("{{ encoded_acronym }}?j", redraw);
+
+    // And redraw every so often
+    setInterval(
+        function()
+        {
+            d3.json("{{ encoded_acronym }}?j", redraw)
+        }, 20000
+    );
+
+    var commaFormatter = d3.format(",")
+    var STAGES = ['NETSCAN1','NETSCAN2','PORTSCAN','VULNSCAN','BASESCAN']
+    var STATUS = ['WAITING','READY','RUNNING','DONE']
+
+    function orderBy(ordering, data, withKeys)
+    {
+        var result = []
+        for(i=0,iend=ordering.length;i<iend;i++){
+            x = ordering[i]
+            if (withKeys == true){
+                result.push([x, data[x]])
+            } else {
+                result.push(data[x])
+            }
+        }
+        return result
+    }
+
+    function redraw(error, jsonData)
+    {
+        if (error) {
+            return console.warn(error);
+        }
+
+        var agency = jsonData.request;
+
+        // agency details
+        d3.select("#agency-details").select("tbody").selectAll("tr").remove();
+        var t = d3.select("#agency-details").select("tbody")
+        var tr = t.append('tr')
+        tr.append('td').text('Name')
+        tr.append('td').text(agency.agency.name)
+        tr = t.append('tr')
+        tr.append('td').text('Acronym')
+        tr.append('td').text(agency.agency.acronym)
+        tr = t.append('tr')
+        tr.append('td').text("Do Not Scan Before")
+        tr.append('td').text(agency.period_start + ' UTC')
+        tr = t.append('tr')
+        tr.append('td').text("Scheduler")
+        tr.append('td').text(agency.scheduler)
+
+
+        // scan-windows
+        d3.select("#window-table").select("tbody").selectAll("tr").remove();
+
+        // Enter
+        // Rows
+        var tr = d3.select("#window-table").select("tbody").selectAll("tr")
+                .data(agency.windows)
+              .enter()
+                .append("tr")
+
+        // Cells
+        var td = tr.selectAll("td")
+                .data(function(d) { return [d.day, d.start + ' UTC', d.duration] })
+              .enter()
+                .append("td")
+                    .text(function(d) { return d; });
+
+        // scan-limits
+        d3.select("#limit-table").select("tbody").selectAll("tr").remove();
+
+        // Sort scan_limits array
+        agency.scan_limits.sort(function (a,b) {
+                        if (a.scanType > b.scanType) { return 1; }
+                        if (a.scanType < b.scanType) { return -1; }
+                        // a must be equal to b
+                        return 0;
+                    });
+        // Enter
+        // Rows
+        var tr = d3.select("#limit-table").select("tbody").selectAll("tr")
+                .data(agency.scan_limits)
+              .enter()
+                .append("tr")
+
+        // Cells
+        var td = tr.selectAll("td")
+                .data(function(d) { return [d.scanType, d.concurrent] })
+              .enter()
+                .append("td")
+                    .text(function(d) { return d; });
+
+
+        // networks
+        d3.select("#networks-table").select("tbody").selectAll("tr").remove();
+
+        // Enter
+        // Rows
+        var tr = d3.select("#networks-table").select("tbody").selectAll("tr")
+                .data(agency.networks)
+              .enter()
+                .append("tr")
+
+        // Cells
+        var td = tr.selectAll("td")
+                .data(function(d) { return [d] })
+              .enter()
+                .append("td")
+                    .text(function(d) { return d; });
+
+        var counts = jsonData.tally.counts;
+        orderedCounts = orderBy(STAGES, counts, true)
+
+        d3.select("#tally-table").select("tbody").selectAll("tr").remove();
+
+        // Enter
+        // Rows
+        var tr = d3.select("#tally-table").select("tbody").selectAll("tr")
+                .data(orderedCounts)
+                .enter()
+                .append("tr");
+
+        // Cells
+        var td = tr.selectAll("td")
+                .data(function(d) {
+                    cols = [d[0]];
+                    vals = d[1];
+                    orderedVals = orderBy(STATUS, vals, false);
+                    cols = cols.concat(orderedVals);
+                    return cols;
+                 })
+              .enter()
+                .append("td")
+                    .text(function(d) { if (typeof d === "number") return commaFormatter(d); return d;});
+
+
+    }
+    </script>
+    <div class="row">
+      <div class="large-12 columns small-centered">
+        <h1 class="text-center">{{ acronym }} Request Details</h1>
+      </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <table id="agency-details" width="100%">
+                <CAPTION><EM>Agency Details</EM></CAPTION>
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="large-6 columns">
+            <table id="tally-table" width="100%">
+                <CAPTION><EM>Scan Status</EM></CAPTION>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Waiting</th>
+                        <th>Ready</th>
+                        <th>Running</th>
+                        <th>Done</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <table id="window-table" width="100%">
+                <CAPTION><EM>Scan Windows</EM></CAPTION>
+                <thead>
+                    <tr>
+                        <th>Day of Week</th>
+                        <th>Start</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="large-6 columns">
+            <table id="limit-table" width="100%">
+                <CAPTION><EM>Scan Limits</EM></CAPTION>
+                <thead>
+                    <tr>
+                        <th>Scan Type</th>
+                        <th>Concurrency Limit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 columns small-centered">
+            <table id="networks-table" width="100%">
+                <CAPTION><EM>Networks</EM></CAPTION>
+                <thead>
+                    <tr>
+                        <th>CIDR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- <embed src="static/state.svg" type="image/svg+xml" /> -->
+{% endblock %}

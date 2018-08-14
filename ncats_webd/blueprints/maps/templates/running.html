@@ -1,0 +1,156 @@
+{% extends "base_template.html" %}
+{% block title %}Running Map{% endblock %}
+{% block head %}
+    {{ super() }}
+	<script src="/static/js/d3/d3.hexbin.v0.min.js"></script>
+	<script src="/static/js/d3/queue.v1.min.js"></script>
+	<script src="/static/js/d3/topojson.v1.min.js"></script>
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+	<link rel="stylesheet" type="text/css" href="static/css/map-light.css">
+	<link rel="stylesheet" type="text/css" href="static/css/map-dark.css">
+{% endblock %}
+{% block body %}
+    <div class="row full">
+        <div class="large-12 columns">
+            <h1 class="title">Cyber Hygiene: Current U.S. Scanning</h1>
+        </div>
+    </div>
+    <div class="row full">
+        <div class="large-12 columns">
+            <svg width="100%" viewBox="-100 0 2100 2000" id="map" perserveAspectRatio="xMinYMid"/>
+        </div>
+    </div>
+	<script>
+
+	var width = 1920,
+	    height = 1080,
+	    parseDate = d3.time.format("%x").parse;
+
+	var color = d3.scale.ordinal()
+	    .domain(['NETSCAN1','PORTSCAN','VULNSCAN'])
+	    .range(["#c66270", "#cfc666", "#7bbe5e"])
+
+	var hexbin = d3.hexbin()
+	    .size([width, height])
+	    .radius(24);
+
+	var radius = d3.scale.sqrt()
+	    .domain([0, 12])
+	    .range([0, 8]);
+
+	var projection = d3.geo.albersUsa()
+	    .scale(2000)
+	    .translate([width / 2, height / 2])
+	    .precision(.1);
+    
+	var scan_source = projection([-77, 39]);
+
+	var path = d3.geo.path()
+	    .projection(projection);
+
+    var svg = d3.select("#map");
+
+	queue()
+	    .defer(d3.json, "static/topo/us.json")
+	    //.defer(d3.json, "../json/severity")
+	    .await(topo_ready);
+
+	function topo_ready(error, us) {
+	    svg.append("path")
+	        .datum(topojson.feature(us, us.objects.land))
+	        .attr("class", "land")
+	        .attr("d", path);
+
+	    svg.append("path")
+	        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+	        .attr("class", "states")
+	        .attr("d", path);
+    
+	    d3.json("?j", update_hexes)
+		setInterval(
+			function()
+			{
+	            d3.json("?j", update_hexes);
+			}, 5000
+		);    
+	}
+
+	function update_hexes(error, hosts) {
+	  var projected_hosts = [];
+	  hosts.forEach(function(d) {
+	    var p = projection(d.loc);
+	    if (p != null)
+	    { 
+	        projected_hosts.push({0:p[0],1:p[1],"stage":d.stage})
+	    }
+	  });
+	  hosts = projected_hosts
+
+	  // Want to understand what is going on below?: http://bl.ocks.org/mbostock/3808218
+	  // DATA JOIN
+	  var node = svg.selectAll(".hexagons")
+	      .data(hexbin(hosts).sort(function(a, b) { return b.length - a.length; }))
+
+	  // UPDATE
+	  // Update old elements as needed.
+
+	  // noop
+
+	  // ENTER
+	  // Create new elements as needed.
+	  enters = node.enter().append("g")
+	      .attr("class", "hexagons")
+	      .attr("transform", "translate("+scan_source+")")
+        
+	  enters.append("path")
+	      .attr("d", function(d) { return hexbin.hexagon(); })
+	      .style("fill-opacity", 0)
+	      .transition()
+	        .duration(750)
+	        .style("fill-opacity", 1)
+        
+	  enters.append("text")
+	      .attr("text-anchor", "middle")
+	      .attr("dy", ".35em")
+
+	  enters.transition()
+	      .duration(750)
+	      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+ 
+ 
+	  // ENTER + UPDATE
+	  // Appending to the enter selection expands the update selection to include
+	  // entering elements; so, operations on the update selection after appending to
+	  // the enter selection will apply to both entering and updating nodes.
+
+	  // set text and color of hex
+	  node.select("path")
+	    .style("fill", function(d) { return color(d[0].stage) }); //TODO use best color, not first
+    
+	  node.select("text")
+	    .text(function(d) { return d.length; })
+	    .style("font-size", function(d) { 
+	        if (d.length < 100) return 20;
+	        if (d.length < 1000) return 16;
+	        return 14;
+	    })
+          
+	  // EXIT
+	  // Remove old elements as needed.
+	  node.exit()
+	    .transition()
+	      .duration(750)
+	      .style("opacity", 0)
+	      .attr("transform", "translate("+scan_source+")")
+	    .remove();
+  
+	}
+    
+    if ($.cookie('cycle_pages') == 'true') {
+        cycle_delay = $.cookie('cycle_delay') || 300;
+        setTimeout(function(){window.location.href='/dashboard'}, cycle_delay * 1000)
+    }
+    
+	</script>
+{% endblock %}

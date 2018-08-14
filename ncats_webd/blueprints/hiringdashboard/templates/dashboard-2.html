@@ -1,0 +1,279 @@
+{% extends 'base_template.html' %}
+{% block title %}Dashboard 2{% endblock %}
+{% block head %}
+    <script src='/static/js/moment.js' type='text/javascript'></script>
+    <script src="/static/js/c3.min.js"></script>
+    <link href="/static/css/c3.min.css" rel="stylesheet" type="text/css">
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/app.dark.css" />
+{% endblock %}
+{% block body %}
+
+<div class="row full">
+    <div class="small-12 medium-6 columns right-border">
+        <div class="row status">
+          <div class="small-6 columns small-header">OVERALL METRICS</div>
+          <div class="small-6 columns small-header">MEASUREMENT</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">STAKEHOLDERS</div>
+          <div id='stakeholders' class="small-6 columns">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">ADDRESSES</div>
+          <div id='addresses' class="small-6 columns">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">HOSTS</div>
+          <div id='hosts' class="small-6 columns">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">VULNERABLE HOSTS</div>
+          <div id='vulnerable_hosts' class="small-6 columns">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">VULNERABILITIES</div>
+          <div id='vulns_total' class="small-6 columns">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns vuln-critical indent">CRITICAL</div>
+          <div id='vulns_critical' class="small-6 columns vuln-critical">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns vuln-high indent">HIGH</div>
+          <div id='vulns_high' class="small-6 columns vuln-high">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns vuln-medium indent">MEDIUM</div>
+          <div id='vulns_medium' class="small-6 columns vuln-medium">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns vuln-low indent">LOW</div>
+          <div id='vulns_low' class="small-6 columns vuln-low">0</div>
+        </div>
+        <div class="row status">
+          <div class="small-6 columns">REPORTS DELIVERED</div>
+          <div id='reports' class="small-6 columns">0</div>
+        </div>
+    </div>
+    <div class="small-12 medium-6 columns">
+        <div class="row status">
+          <div class="small-10 columns small-header">STAKEHOLDER</div>
+          <div class="small-1 columns small-header">CRIT</div>
+          <div class="small-1 columns small-header">HIGH</div>
+        </div>
+        <div id="stakeholder_column">
+        </div>
+    </div>
+</div>
+
+<div class="row full">
+    <div class="small-12 large-3 columns">
+        <div class="row">
+            <div class="small-12 columns small-header">NETWORK SCAN</div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <svg width="400" height="64">
+                    <g>
+                        <polygon points="0,0 170,0 200,32 170,64 0,64" opacity="0.65" fill="#ff6666" />
+                        <text id="ns1_waiting" x="90px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                    <g transform="translate(180,0)">
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" fill="#ff6666" />
+                        <text id="ns1_running" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="small-12 large-3 columns">
+        <div class="row">
+            <div class="small-12 columns small-header">COMMON PORT SCAN</div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <svg width="400" height="64">
+                    <g>
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" opacity="0.65" fill="#FFCC66" />
+                        <text id="ns2_waiting" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                    <g transform="translate(180,0)">
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" fill="#FFCC66" />
+                        <text id="ns2_running" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="small-12 large-3 columns">
+        <div class="row">
+            <div class="small-12 columns small-header">FULL PORT SCAN</div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <svg width="400" height="64">
+                    <g>
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" opacity="0.65" fill="#66CCFF" />
+                        <text id="ps_waiting" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                    <g transform="translate(180,0)">
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" fill="#66CCFF" />
+                        <text id="ps_running" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="small-12 large-3 columns">
+        <div class="row">
+            <div class="small-12 columns small-header">VULNERABILITY SCAN</div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <svg width="400" height="64">
+                    <g>
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" opacity="0.65" fill="#66FF66" />
+                        <text id="vs_waiting" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                    <g transform="translate(180,0)">
+                        <polygon points="0,0 170,0 200,32 170,64 0,64 30,32" fill="#66FF66" />
+                        <text id="vs_running" x="105px" y="1em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">0</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript"  charset="utf-8">
+    socket.on('connect', function() {
+        console.log('connected (queues)');
+        socket.emit('join', {'room':'queues'});
+        socket.emit('queues_latest');
+        
+        console.log('connected (overall_metrics)');
+        socket.emit('join', {'room':'overall_metrics'});
+        socket.emit('overall_metrics_latest');
+
+        console.log('connected (ticket_severity_counts)');
+        socket.emit('join', {'room':'ticket_severity_counts'});
+        socket.emit('ticket_severity_counts_latest');
+    });
+
+    socket.on('disconnect', function() {
+        console.log('disconnected (?)');
+    });
+
+    socket.on('queues_data_push', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new queue data', data);
+        update_all_charts(data);
+    })
+    
+    socket.on('overall_metrics', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new overall metrics data', data);
+        update_overall_metrics(data);
+    })
+    
+    socket.on('ticket_severity_counts', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new ticket severity counts data', data);
+        update_stakeholders(data);
+    })
+    
+    function tween_it(element, new_datum, in_tween_duration) {
+        var calced_tween_duration = (typeof in_tween_duration === 'undefined') ? 5000 : in_tween_duration;
+        var previous_datum = element.datum();
+        if (!$.isNumeric(previous_datum)) {
+            previous_datum = 0;
+        }
+        element.datum(new_datum).transition().duration(calced_tween_duration)
+        .tween('text', function(d) {
+            var i = d3.interpolateRound(previous_datum, d);
+            return function(t) {
+                this.textContent = d3.format(',')(i(t));
+            };
+        });
+    }
+    
+    function update_chart(chart_text, column_data) {
+        var svg_text = d3.select(chart_text);
+        tween_it(svg_text, column_data);
+    }
+
+	function update_all_charts(json_data) {
+        update_chart('#ns1_waiting', json_data.ns1_waiting);
+        update_chart('#ns1_running', json_data.ns1_running);
+        update_chart('#ns2_waiting', json_data.ns2_waiting);
+        update_chart('#ns2_running', json_data.ns2_running);
+        update_chart('#ps_waiting', json_data.ps_waiting);
+        update_chart('#ps_running', json_data.ps_running);
+        update_chart('#vs_waiting', json_data.vs_waiting);
+        update_chart('#vs_running', json_data.vs_running);
+    }
+    
+    function update_single_overall_metric(new_datum, selector) {
+        var text_element = d3.select(selector);
+        tween_it(text_element, new_datum);
+    }
+        
+    function update_overall_metrics(json_data) {
+        update_single_overall_metric(json_data.stakeholders, '#stakeholders');
+        update_single_overall_metric(json_data.addresses, '#addresses');
+        update_single_overall_metric(json_data.hosts, '#hosts');
+        update_single_overall_metric(json_data.vulnerable_hosts, '#vulnerable_hosts');
+        update_single_overall_metric(json_data.open_tickets.total, '#vulns_total');
+        update_single_overall_metric(json_data.open_tickets.critical, '#vulns_critical');
+        update_single_overall_metric(json_data.open_tickets.high, '#vulns_high');
+        update_single_overall_metric(json_data.open_tickets.medium, '#vulns_medium');
+        update_single_overall_metric(json_data.open_tickets.low, '#vulns_low');
+        update_single_overall_metric(json_data.reports, '#reports');
+    }
+        
+    function update_stakeholders(stakeholder_data) {
+        console.log(stakeholder_data);
+        
+        //binding on org_name
+        var top_div = d3.select('#stakeholder_column').selectAll('div.row')
+            .data(stakeholder_data.slice(0,10), function(d) {return d.org_name});
+        
+        //entering
+        var enters_row = top_div.enter()
+            .append('div').classed('row status', true);
+    
+        var enters_name = enters_row
+            .append('div')
+                .classed('small-10 columns censored', true)
+                .text(function(d){return d.org_name.toUpperCase()});
+        
+        var enters_critical = enters_row
+            .append('div')
+                .classed('small-1 columns vuln-critical', true)
+                .text(function(d){return d.critical_open});
+        
+        var enters_high = enters_row
+            .append('div')
+                .classed('small-1 columns vuln-high', true)
+                .text(function(d){return d.high_open});
+        
+        //updating
+        var crits = top_div.select('div.vuln-critical')
+                .text(function(d){return d.critical_open});
+
+        var highs = top_div.select('div.vuln-high')
+                .text(function(d){return d.high_open});
+                
+        //exiting
+        top_div.exit().remove();
+    }
+    
+    if ($.cookie('cycle_pages') == 'true') {
+        cycle_delay = $.cookie('cycle_delay') || 300;
+        setTimeout(function(){window.location.href='/maps/running'}, cycle_delay * 1000)
+    }
+    
+</script>
+{% endblock %}

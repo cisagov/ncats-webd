@@ -1,0 +1,7 @@
+.DS_Store
+**.pyc
+._*
+*.egg-info
+web/instance/secret_key
+web/var/flasky-instance/secret_key
+.ipynb_checkpoints

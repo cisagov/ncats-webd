@@ -1,0 +1,122 @@
+{% extends "base_template.html" %}
+{% block title %}First-Seen Vulnerabilities{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/moment.js" type="text/javascript"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="static/style.css" /> -->
+{% endblock %}
+{% block body %}
+    <script type="text/javascript"  charset="utf-8">
+
+    // var socket = io.connect('http://' + document.domain + ':' + location.port);
+    //
+    // socket.on('connect', function() {
+    //     reconnected()
+    //     socket.emit('foobar', {data: 'I\'m connected!'});
+    // });
+    //
+    // socket.on('disconnect', function() {
+    //     disconnected()
+    // });
+    //
+    // socket.on('coolio', function(msg) {
+    //     console.log('coolio')
+    //     console.log(msg)
+    // })
+
+    // Load the agency data asynchronously.
+    // Draw now
+    d3.json("?j", redraw);
+
+    // And redraw every so often
+    setInterval(
+        function()
+        {
+            console.log(Date() + ': refresh...')
+            d3.json("?j", redraw);
+            socket.emit('foobar', {data: 'I am done redrawing.'})
+        }, {{refresh_interval}} * 1000 //passed in as seconds
+    );
+
+    var commaFormatter = d3.format(",")
+    var SEVERITY = ['Info', 'Low','Medium','High','Critical']
+
+    function cellData(d)
+    {
+        first_seen = moment(d.first_seen).fromNow();
+        severity = SEVERITY[d.details.severity] + ' (' + d.details.cvss_base_score + ')'
+        // http://stackoverflow.com/questions/18205034/d3-adding-data-attribute-conditionally
+        return [{text:d.details.name, link:"tq/"+d.source+":"+d.source_id},
+                 {text:severity, link:null},
+                 {text:first_seen, link:null},
+                 {text:d.open_count, link:null},
+                 {text:d.closed_count, link:null},
+                 {text:d.total, link:null}];
+    }
+
+    function rowStyle(d)
+    {
+        if (d.details.severity == 3) return 'warn';
+        if (d.details.severity == 4) return 'critical';
+    }
+
+    function redraw(error, jsonData)
+    {
+        if (error) {
+            return console.warn(error);
+        }
+
+        //DATA JOIN, keyed on source and source_id
+        var rows = d3.select("#ticket-table").select("tbody").selectAll("tr")
+            .data(jsonData, function(d) { return d.source + d.source_id; });
+
+        // UPDATE
+        anchors = rows
+            .attr("class", rowStyle)
+            .selectAll("td.a")
+            .data(cellData)
+        anchors.text(function(d){return d.text;})
+        anchors.attr('href', function(d){return d.link;})
+
+        // ENTER
+        var rowEnter = rows.enter().insert("tr")
+            .attr("class", rowStyle)
+            .selectAll("td")
+            .data(cellData)
+            .enter().append("td")
+            .append("a").attr('href', function(d) {return d.link;})
+            .text(function(d){return d.text;})
+
+        //EXIT
+        rows.exit()
+            .transition()
+                .duration(4000)
+                .style("opacity", 0)
+            .remove();
+
+        // make it visible
+        d3.select("#ticket-table").attr("style","");
+    }
+    </script>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>First-Seen Vulnerabilities</h1>
+      </div>
+    </div>
+
+    <table id="ticket-table" role="grid" style="visibility: hidden">
+        <!-- <CAPTION><EM>Snapshots</EM></CAPTION> -->
+        <thead>
+            <tr>
+                <th>Vulnerability Name</th>
+                <th>Severity</th>
+                <th>First Seen</th>
+                <th>Open</th>
+                <th>Closed</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base_template.html" %}
+{% block title %}System Status{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/d3/lib/colorbrewer/colorbrewer.js" type="text/javascript"></script>
+    <script src="/static/js/c3.min.js"></script>
+    <script src="/static/js/moment.js" type="text/javascript"></script>
+    <link href="/static/css/c3.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="large-12 columns">
+            <h2>Host Scan Durations</h2>
+        </div>
+    </div>
+    <div class="row">
+      <div class="large-12 columns">
+          <div id="chart1"></div>
+      </div>
+    </div>
+    <hr>
+    <script type="text/javascript"  charset="utf-8">
+        var chart1 = c3.generate({
+            bindto: '#chart1',
+            transition: {
+                duration: 1000
+            },
+            data: {
+                url: '?j',
+                mimeType: 'json',
+                x: 'x',
+                types: {
+                    NETSCAN1: 'bar',
+                    NETSCAN2: 'bar',
+                    PORTSCAN: 'bar',
+                    VULNSCAN: 'bar',
+                },
+                //groups: [['NETSCAN1','NETSCAN2','PORTSCAN','VULNSCAN']],
+                // order: null,
+                // colors: {
+                //     young: '#0099cc',
+                //     mid: '#cc7a00',
+                //     old: '#cc0000',
+                //     backlog: '#00aa00',
+                //     total: '#000000'
+                // },
+                // names: {
+                //     young: '< 30 days',
+                //     mid: '30 - 60 days',
+                //     old: '> 60 days',
+                //     backlog: 'Backlog',
+                //     total: 'Total'
+                // }
+            },
+            axis: {
+                x: {
+                    type: 'indexed',
+                    tick: {
+                        format: function (e, d) {
+                                    return moment.duration(e * 1000).humanize();
+                                },
+                        //count: 12
+                    },
+                    // label: {
+                    //     text: 'Date',
+                    //     position: 'outer-center'
+                    // }
+                    min: 0,
+                    //max: 3000,
+                   },
+                y: {
+                    label: {
+                        text: 'Hosts in Scan',
+                        position: 'outer-middle'
+                    },
+                    min: 0,
+                    padding: {
+                        bottom: 0
+                    }
+                }
+            },
+            regions: [
+                {start: 3600, end: 86400, class:'yellow'},
+                {start: 1440, class:'red'}
+            ],
+            grid: {
+                x: {
+                    lines: [
+                        {value: 3600, text: '1 hour', position: 'end'},
+                        {value: 86400, text: '1 day', position: 'end'},
+                    ]
+                }
+            }
+        });
+                
+        // And update every so often
+        setInterval(
+            function()
+            {
+                console.log(Date() + ': refresh...')
+                chart1.load({url:"?j", mimeType:"json"});
+            }, {{refresh_interval}} * 1000 //passed in as seconds
+        );
+        
+    </script>
+
+{% endblock %}

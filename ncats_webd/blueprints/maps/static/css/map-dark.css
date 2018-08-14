@@ -1,0 +1,20 @@
+body {
+    background-color: #000;
+}
+
+.land {
+  fill: #333;
+  stroke: #0f0;
+}
+
+.hexagons path {
+  stroke: #000;
+}
+
+.states {
+  stroke: #0f0;
+}
+
+h1 {
+    color:#0f0;
+}

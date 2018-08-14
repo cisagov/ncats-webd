@@ -1,0 +1,259 @@
+{% extends 'base_template.html' %}
+{% block title %}Dashboard 2{% endblock %}
+{% block head %}
+    <script src='/static/js/moment.js' type='text/javascript'></script>
+    <script src="/static/js/c3.min.js"></script>
+    <link href="/static/css/c3.min.css" rel="stylesheet" type="text/css">
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/app.dark.css" />
+{% endblock %}
+{% block body %}
+
+<div class="hiring-dashboard">
+    <div id="grid-container" class="grid-container">
+      <div class="item small-header-two">
+        POSITION NUMBER
+      </div>
+      <div class="item small-header-two weeks-in-stage">
+        WEEKS IN STAGE
+      </div>
+      <div class="item small-header-two">
+        EOD
+      </div>
+      <div class="item small-header-two">
+        TOTAL DAYS
+      </div>
+      <div class="item"></div>
+      <div class="item small-header-two">
+        1
+           <span class="tooltiptext">Position Created</span>
+      </div>
+      <div class="item small-header-two">
+        2
+	   <span class="tooltiptext">Vacancy Posted by Sub-component</span>
+      </div>
+      <div class="item small-header-two">
+        3
+	   <span class="tooltiptext">Vacancy Posted with OHC</span>
+      </div>
+      <div class="item small-header-two">
+        4
+	  <span class="tooltiptext">Vacancy Announced with OPM</span>
+      </div>
+      <div class="item small-header-two">
+        5
+	  <span class="tooltiptext">Wainting for Eligibles from OPM</span>
+      </div>
+      <div class="item small-header-two">
+        6
+	  <span class="tooltiptext">Hiring Managers review Eligibles</span>
+      </div>
+      <div class="item small-header-two">
+        7
+	  <span class="tooltiptext">TJO sent to Candidate</span>
+      </div>
+      <div class="item small-header-two">
+        8
+	  <span class="tooltiptext">Pre-employment Requirements</span>
+      </div>
+      <div class="item small-header-two">
+        9
+	  <span class="tooltiptext">Pending Security</span>
+      </div>
+      <div class="item small-header-two">
+        10
+	  <span class="tooltiptext">Final Job Offer</span>
+      </div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+    <div class="row full">
+      <div class="small-12 large-4 columns">
+        <div class="row">
+          <div class="small-12 columns small-header-two">
+            BEHIND SCHEDULE
+          </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns text-center">
+            <svg width="150" height="64">
+            <g>
+              <rect width="150" height="100" opacity="0.65" fill="#ff6666"></rect>
+              <text id="ns1_waiting" x="80px" y="1.33em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">
+                1
+              </text>
+            </g></svg>
+          </div>
+        </div>
+      </div>
+      <div class="small-12 large-4 columns">
+        <div class="row">
+          <div class="small-12 columns small-header-two">
+            AT RISK
+          </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns text-center">
+            <svg width="150" height="64">
+            <g>
+              <rect width="150" height="100" fill="#FFCC66"></rect>
+              <text id="ns2_running" x="80px" y="1.33em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">
+                1
+              </text>
+            </g></svg>
+          </div>
+        </div>
+      </div>
+      <div class="small-12 large-4 columns">
+        <div class="row">
+          <div class="small-12 columns small-header-two">
+            ON TRACK
+          </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns text-center">
+            <svg width="150" height="64">
+            <g>
+              <rect width="150" height="100" fill="#66FF66"></rect>
+              <text id="ps_waiting" x="80px" y="1.33em" fill="black" text-anchor="middle" font-size="3em" font-family="univers">
+                1
+              </text>
+            </g></svg>
+          </div>
+        </div>
+      </div>
+      <div class="small-12 large-3 columns"></div>
+    </div>
+  </div>
+<script type="text/javascript"  charset="utf-8">
+    socket.on('connect', function() {
+        console.log('connected (queues)');
+        socket.emit('join', {'room':'new_hire_metrics'});
+        socket.emit('new_hire_metrics_latest');
+
+    });
+
+    socket.on('disconnect', function() {
+        console.log('disconnected (?)');
+    });
+
+        socket.on('queues_data_push', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new queue data', data);
+        update_all_charts(data);
+    })
+    
+    socket.on('new_hire_metrics', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new hire data', data);
+        update_overall_metrics(data);
+    })
+    
+    socket.on('ticket_severity_counts', function(msg) {
+        data = JSON.parse(msg.data)
+        console.log('new ticket severity counts data', data);
+        update_stakeholders(data);
+    })
+    
+    function tween_it(element, new_datum, in_tween_duration) {
+        var calced_tween_duration = (typeof in_tween_duration === 'undefined') ? 5000 : in_tween_duration;
+        var previous_datum = element.datum();
+        if (!$.isNumeric(previous_datum)) {
+            previous_datum = 0;
+        }
+        element.datum(new_datum).transition().duration(calced_tween_duration)
+        .tween('text', function(d) {
+            var i = d3.interpolateRound(previous_datum, d);
+            return function(t) {
+                this.textContent = d3.format(',')(i(t));
+            };
+        });
+    }
+    
+    function update_chart(chart_text, column_data) {
+        var svg_text = d3.select(chart_text);
+        tween_it(svg_text, column_data);
+    }
+
+	function update_all_charts(json_data) {
+        update_chart('#ns1_waiting', json_data.ns1_waiting);
+        update_chart('#ns1_running', json_data.ns1_running);
+        update_chart('#ns2_waiting', json_data.ns2_waiting);
+        update_chart('#ns2_running', json_data.ns2_running);
+        update_chart('#ps_waiting', json_data.ps_waiting);
+        update_chart('#ps_running', json_data.ps_running);
+        update_chart('#vs_waiting', json_data.vs_waiting);
+        update_chart('#vs_running', json_data.vs_running);
+    }
+    
+    function update_single_overall_metric(new_datum, selector) {
+        var text_element = d3.select(selector);
+        tween_it(text_element, new_datum);
+    }
+        
+    function update_overall_metrics(json_data) {
+        update_single_overall_metric(json_data.stakeholders, '#stakeholders');
+        update_single_overall_metric(json_data.addresses, '#addresses');
+        update_single_overall_metric(json_data.hosts, '#hosts');
+        update_single_overall_metric(json_data.vulnerable_hosts, '#vulnerable_hosts');
+        update_single_overall_metric(json_data.open_tickets.total, '#vulns_total');
+        update_single_overall_metric(json_data.open_tickets.critical, '#vulns_critical');
+        update_single_overall_metric(json_data.open_tickets.high, '#vulns_high');
+        update_single_overall_metric(json_data.open_tickets.medium, '#vulns_medium');
+        update_single_overall_metric(json_data.open_tickets.low, '#vulns_low');
+        update_single_overall_metric(json_data.reports, '#reports');
+    }
+        
+    function update_stakeholders(stakeholder_data) {
+        console.log(stakeholder_data);
+
+        for(var i = 0; i < 26; i++){
+          var node = document.createElement("DIV");                 // Create a <li> node
+          var textnode = document.createTextNode("JAVASCRIPT!");    // Create a text node
+          node.appendChild(textnode);                              // Append the text to <li>
+          document.getElementById("grid-container").appendChild(node);
+        }
+        
+        //binding on org_name
+        var top_div = d3.select('#stakeholder_column').selectAll('div.row')
+            .data(stakeholder_data.slice(0,10), function(d) {return d.org_name});
+        
+        //entering
+        var enters_row = top_div.enter()
+            .append('div').classed('row status', true);
+    
+        var enters_name = enters_row
+            .append('div')
+                .classed('small-10 columns censored', true)
+                .text(function(d){return d.org_name.toUpperCase()});
+        
+        var enters_critical = enters_row
+            .append('div')
+                .classed('small-1 columns vuln-critical', true)
+                .text(function(d){return d.critical_open});
+        
+        var enters_high = enters_row
+            .append('div')
+                .classed('small-1 columns vuln-high', true)
+                .text(function(d){return d.high_open});
+        
+        //updating
+        var crits = top_div.select('div.vuln-critical')
+                .text(function(d){return d.critical_open});
+
+        var highs = top_div.select('div.vuln-high')
+                .text(function(d){return d.high_open});
+                
+        //exiting
+        top_div.exit().remove();
+    }
+    
+    if ($.cookie('cycle_pages') == 'true') {
+        cycle_delay = $.cookie('cycle_delay') || 300;
+        setTimeout(function(){window.location.href='/maps/running'}, cycle_delay * 1000)
+    }
+    
+</script>
+{% endblock %}

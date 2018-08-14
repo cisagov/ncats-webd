@@ -1,0 +1,123 @@
+{% extends "base_template.html" %}
+{% block title %}Weekly Tickets Report{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="large-12 columns">
+            <h1>Weekly Tickets Report</h1>  
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 columns">
+    <p>
+        Currently-Open Non-False-Positive Tickets: {{ TICKET.open_non_FP_tix.total }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{ TICKET.open_non_FP_tix.federal }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{ TICKET.open_non_FP_tix.SLTT }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{ TICKET.open_non_FP_tix.private }}<br>
+		Currently-Open False-Positive Tickets: {{ TICKET.open_FP_tix.total }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{ TICKET.open_FP_tix.federal }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{ TICKET.open_FP_tix.SLTT }}<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{ TICKET.open_FP_tix.private }}<br>
+		Data below does not include False-Positive tickets
+    </p>
+    <p>
+        Current FY Activity ({{TICKET.currentFYactivity.start}} - {{TICKET.currentFYactivity.end}})<br>
+        Tickets Opened: {{TICKET.currentFYactivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentFYactivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentFYactivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentFYactivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.currentFYactivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentFYactivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentFYactivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentFYactivity.privClosed}} <br>
+        Reports Generated: {{TICKET.currentFYactivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentFYactivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentFYactivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentFYactivity.privReports}} <br>
+    </p>
+    
+    <p>
+        Previous FY Activity ({{TICKET.previousFYactivity.start}} - {{TICKET.previousFYactivity.end}})<br>
+        Tickets Opened: {{TICKET.previousFYactivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousFYactivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousFYactivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousFYactivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.previousFYactivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousFYactivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousFYactivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousFYactivity.privClosed}} <br>
+        Reports Generated: {{TICKET.previousFYactivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousFYactivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousFYactivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousFYactivity.privReports}} <br>
+    </p>
+    
+    <p>
+        Current Month Activity ({{TICKET.currentMonthActivity.start}} - {{TICKET.currentMonthActivity.end}})<br>
+        Tickets Opened: {{TICKET.currentMonthActivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentMonthActivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentMonthActivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentMonthActivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.currentMonthActivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentMonthActivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentMonthActivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentMonthActivity.privClosed}} <br>
+        Reports Generated: {{TICKET.currentMonthActivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentMonthActivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentMonthActivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentMonthActivity.privReports}} <br>
+    </p>
+    
+    <p>
+        Previous Month Activity ({{TICKET.previousMonthActivity.start}} - {{TICKET.previousMonthActivity.end}})<br>
+        Tickets Opened: {{TICKET.previousMonthActivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousMonthActivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousMonthActivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousMonthActivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.previousMonthActivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousMonthActivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousMonthActivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousMonthActivity.privClosed}} <br>
+        Reports Generated: {{TICKET.previousMonthActivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousMonthActivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousMonthActivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousMonthActivity.privReports}} <br>
+    </p>
+    
+    <p>
+        Current Week Activity ({{TICKET.currentWeekActivity.start}} - {{TICKET.currentWeekActivity.end}})<br>
+        Tickets Opened: {{TICKET.currentWeekActivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentWeekActivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentWeekActivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentWeekActivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.currentWeekActivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentWeekActivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentWeekActivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentWeekActivity.privClosed}} <br>
+        Reports Generated: {{TICKET.currentWeekActivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.currentWeekActivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.currentWeekActivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.currentWeekActivity.privReports}} <br>
+    </p>
+    
+    <p>
+        Previous Week Activity ({{TICKET.previousWeekActivity.start}} - {{TICKET.previousWeekActivity.end}})<br>
+        Tickets Opened: {{TICKET.previousWeekActivity.opened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousWeekActivity.fedOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousWeekActivity.SLTTOpened}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousWeekActivity.privOpened}} <br>
+        Tickets Closed: {{TICKET.previousWeekActivity.closed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousWeekActivity.fedClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousWeekActivity.SLTTClosed}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousWeekActivity.privClosed}} <br>
+        Reports Generated: {{TICKET.previousWeekActivity.reports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Federal: {{TICKET.previousWeekActivity.fedReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SLTT: {{TICKET.previousWeekActivity.SLTTReports}} <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Private: {{TICKET.previousWeekActivity.privReports}} <br>
+    </p>
+
+        </div>
+    </div>
+{% endblock %}

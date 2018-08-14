@@ -1,0 +1,172 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    {% block head %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    
+    <title>Cyber Hygiene | {% block title %}{% endblock %}</title>
+    
+    <link rel="stylesheet" href="/static/css/app.css" />
+    <link rel="stylesheet" href="/static/css/foundation.css" />
+    <link rel="stylesheet" href="/static/fonts/foundation-icons/foundation-icons.css" />
+    <link rel="stylesheet" href="/static/fonts/univers/univers.css" />
+    <script src="/static/js/vendor/modernizr.js"></script>
+    <script src="/static/js/d3/d3.min.js" type="text/javascript"></script>
+    <script src="/static/js/d3/lib/colorbrewer/colorbrewer.js" type="text/javascript"></script>
+    <script src="/static/js/screenfull.js" type="text/javascript"></script>
+    <script src='/static/js/socket.io.js' type='text/javascript'></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port + '/cyhy',
+                                {'reconnection':true,
+                                 'reconnection limit':16000,
+                                 'max reconnection attempts': Infinity
+                                });
+    </script>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="fixed">
+        <nav class="top-bar" data-topbar role="navigation">
+          <ul class="title-area">
+            <li class="name">
+              <h1><a href="/">NCATS: Cyber Hygiene</a></h1>
+            </li>
+             <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+            <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+          </ul>
+          <section class="top-bar-section">
+            <!-- Right Nav Section -->
+            <ul class="right">
+              <li class="divider"/>
+              <li>
+                  <a href="/rr">System</a>
+              </li>
+              <li class="divider"></li>
+              <li class="has-dropdown">
+                  <a href="#">Monitoring</a>
+                  <ul class="dropdown">
+                    <li><a href="/status">Scan Progress</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/history">Scan History (defunct)</a></li>
+                  </ul>
+              </li>
+              <li class="divider"></li>
+              <li class="has-dropdown">
+                  <a href="#">Maps</a>
+                  <ul class="dropdown">
+                    <li><a href="/maps/hosts">Host Locations</a></li>
+                    <li><a href="/maps/running">Running Scans</a></li>
+                    <li><a href="/maps/active">Active Vulnerabilities</a></li>
+                  </ul>
+              </li>
+              <li class="divider"></li>
+              <li class="has-dropdown">
+                  <a href="#">Reports</a>
+                  <ul class="dropdown">
+                    <li><a href="/dashboard/firstseen">First-Seen Vulnerabilities</a></li>
+                    <li><a href="/metrics">Metrics Query</a></li>
+                    <li><a href="/metrics/weekly">Weekly Tickets</a></li>
+					<li><a href="/cybex">Cyber Exposure</a></li>
+					<li><a href="/bod" >BOD</a></li>
+                  </ul>
+              </li>
+              <!-- <li class="divider"></li>
+              <li><a href="/bod" >BOD</a></li> -->
+              <li class="divider"></li>
+              <li class="has-dropdown">
+                <a href="#">Help</a>
+                <ul class="dropdown">
+                  <li><a href="#">Data Dictionary</a></li>
+                  <li><a href="#">Contact</a></li>
+                </ul>
+              </li>
+              <li class="divider"></li>
+              <li id="preferences">
+                <a href="/prefs" title="Change site preferences"><i class="step fi-widget size-48">​</i>​</a>
+              </li>
+              <li class="divider"></li>
+              <li id="fullscreen">
+                <a href="#" title="Toggle fullscreen view"><i class="step fi-monitor size-48">​</i>​</a>
+              </li>
+            </ul>
+
+            <!-- Left Nav Section -->
+            <!-- <ul class="left">
+              <li><a href="#">Left Nav Button</a></li>
+            </ul> -->
+          </section>
+        </nav>
+    </div>
+    
+    <div id="access_modal" data-options="close_on_background_click:false" class="reveal-modal dark-text" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+      <h2 id="modalTitle">Authorized Access Only</h2>
+      <ul class="medium-block-grid-3"><li/><li><img src="/static/img/dhs_logo_tp.svg"/></li></ul>
+      <p class="text-justify">You are about to access a Department of Homeland Security computer system. This computer system and data therein are property of the U.S. Government and provided for official U.S. Government information and use. There is no expectation of privacy when you use this computer system. The use of a password or any other security measure does not establish an expectation of privacy. By using this system, you consent to the terms set forth in this notice. You may not process classified national security information on this computer system. Access to this system is restricted to authorized users only. Unauthorized access, use, or modification of this system or of data contained herein, or in transit to/from this system, may constitute a violation of section 1030 of title 18 of the U.S. Code and other criminal laws. Anyone who accesses a federal computer system without authorization or exceeds access authority, or obtains, alters, damages, destroys, or discloses information, or prevents authorized use of information on the computer system, may be subject to penalties, fines or imprisonment. This computer system and any related equipment is subject to monitoring for administrative oversight, law enforcement, criminal investigative purposes, inquiries into alleged wrongdoing or misuse, and to ensure proper performance of applicable security features and procedures. DHS may conduct monitoring activities without further notice.</p>
+    <p><a href="#" data-reveal-id="access_modal" class="secondary button right" onclick="yup()">Yup</a>
+    </div>
+    
+    <div id="disconnect_modal" class="reveal-modal critical dark-text" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+      <h2 id="modalTitle">Server Disconnected</h2>
+      <h6 class="subheader" id='disconnect_date'></h6>
+      <p class="text-justify">The connection to the server has been lost.  If you are connected via VPN check to see if it needs to be reestablished.  This dialog box will dismiss itself if connectivity is restored.</p>
+    <p><a href="#" data-reveal-id="disconnect_modal" class="secondary button right">Crap</a>
+    </div>
+
+    {% block body %}
+    {% endblock %}
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/js/vendor/fastclick.js"></script>
+    <script src="/static/js/foundation.min.js"></script>
+    <script>
+        $(document).foundation();
+
+        if ($.cookie('censor_names') == 'true') {
+            $('head:last').append('<link rel="stylesheet" type="text/css" href="/static/css/censor.css" />');
+        }
+        
+        function disconnected(){
+            document.getElementById("disconnect_date").textContent = new Date();
+            $('#disconnect_modal').foundation('reveal', 'open');
+        }
+        
+        function reconnected(){
+            var modal = $('#disconnect_modal')
+            if (modal.hasClass('open')) {
+                modal.foundation('reveal', 'close');
+            }
+        }
+        
+        socket.on('connect', function() {
+            console.log('connected');
+            reconnected();
+        });
+
+        socket.on('disconnect', function() {
+            console.log('disconnected');
+            disconnected();
+        });
+        
+        socket.on('reconnecting', function(next_delay) {
+            console.log('next reconnect attempt in ' + next_delay + 'ms');
+        });
+        
+        if (!$.cookie('saw_warning')) {
+            $('#access_modal').foundation('reveal', 'open');
+        }
+        
+        function yup(){
+            $.cookie('saw_warning', true, {expires:1, path:'/'});
+        }
+        
+        if (screenfull.enabled) {
+            $('#fullscreen')[0].addEventListener('click', function () { screenfull.toggle(); });
+        } else {
+            $('#fullscreen')[0].setAttribute('class', 'hide');
+        }
+    </script>
+  </body>
+</html>
