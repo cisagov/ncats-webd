@@ -8,6 +8,8 @@ from pandas import DataFrame
 
 from cyhy.util import util
 
+TICKETS_CLOSED_PAST_DAYS = 30
+
 def get_open_tickets_dataframe(db, ticket_severity):
     now = util.utcnow()
     first_report_time_cache = dict()     # Cache generated_time of first report for each ticket

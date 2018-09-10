@@ -26,7 +26,6 @@ CRITICAL_HISTOGRAM_CUTOFF_DAYS = 180
 HIGH_HISTOGRAM_CUTOFF_DAYS = 360
 CRITICAL_SEVERITY = 4
 HIGH_SEVERITY = 3
-TICKETS_CLOSED_PAST_DAYS = 30
 data_pusher = None
 
 #import IPython; IPython.embed() #<<< BREAKPOINT >>>
@@ -74,7 +73,7 @@ def csv_get_closed_tickets(ticket_severity):
 
     csv = ncats_webd.cybex_queries.csv_get_closed_tickets(current_app.db, ticket_severity)
     response = Response(csv, mimetype='text/csv')
-    response.headers["Content-Disposition"] = "attachment; filename=cybex_closed_tickets{!s}_past_{!s}_days_{!s}.csv".format(severity_name, TICKETS_CLOSED_PAST_DAYS, util.utcnow().strftime('%Y%m%d'))
+    response.headers["Content-Disposition"] = "attachment; filename=cybex_closed_tickets{!s}_past_{!s}_days_{!s}.csv".format(severity_name, ncats_webd.cybex_queries.TICKETS_CLOSED_PAST_DAYS, util.utcnow().strftime('%Y%m%d'))
     return response
 
 @cache.memoize(timeout=REFRESH_INTERVAL)
