@@ -50,24 +50,24 @@ class DashboardQueries:
                 current_org_list = [org['_id']] + db.RequestDoc.get_all_descendants(org['_id'])
             else:
                 current_org_list = [org['_id']]
-            tix = db.tickets.aggregate([
+            tix = list(db.tickets.aggregate([
                 {'$match':{'open':True, 'owner':{'$in':current_org_list}, 'false_positive':False}},
                 {'$group': {'_id': {},
                             'critical_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                             'high_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',3]}, 1, 0]}}
-                           }}])
+                           }}], cursor={}))
 
-            if tix['result']:
+            if len(tix) > 0:
                 results['ticket_data'][org['_id']] = {'org_name':org['agency']['name'],
-                                                      'critical_open':tix['result'][0].get('critical_tix_open'),
-                                                      'high_open':tix['result'][0].get('high_tix_open')}
+                                                      'critical_open':tix[0].get('critical_tix_open', 0),
+                                                      'high_open':tix[0].get('high_tix_open', 0)}
             else:
                 results['ticket_data'][org['_id']] = {'org_name':org['agency']['name'],
                                                       'critical_open':0,
                                                       'high_open':0}
 
         # Reverse sort on critical_open, then high_open, then normal (alphabetical) sort on org_name
-        sorted_ticket_data = sorted(results['ticket_data'].values(),
+        sorted_ticket_data = sorted(tix[0]['ticket_data'].values(),
             key=lambda(v):(-v['critical_open'], -v['high_open'], v['org_name']))
         return sorted_ticket_data
 
@@ -80,7 +80,7 @@ class DashboardQueries:
         results['hosts'] = db.hosts.find({'state.up':True}).count()
         results['vulnerable_hosts'] = len(db.tickets.find({'open':True, 'false_positive':False}).distinct('ip_int'))
 
-        tix = db.tickets.aggregate([
+        tix = list(db.tickets.aggregate([
             {'$match':{'open':True, 'false_positive':False}},
             {'$group': {'_id': {},
                  'low_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
@@ -88,13 +88,15 @@ class DashboardQueries:
                  'high_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',3]}, 1, 0]}},
                  'critical_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                  'total_tix_open':{'$sum':1}
-             }}])
+             }}], cursor={}))
 
-        results['open_tickets'] = {'low':tix['result'][0]['low_tix_open'],
-                                   'medium':tix['result'][0]['medium_tix_open'],
-                                   'high':tix['result'][0]['high_tix_open'],
-                                   'critical':tix['result'][0]['critical_tix_open'],
-                                   'total':tix['result'][0]['total_tix_open']}
+
+
+        results['open_tickets'] = {'low':tix[0]['low_tix_open'],
+                                   'medium':tix[0]['medium_tix_open'],
+                                   'high':tix[0]['high_tix_open'],
+                                   'critical':tix[0]['critical_tix_open'],
+                                   'total':tix[0]['total_tix_open']}
 
         results['reports'] = db.reports.find({'report_types':REPORT_TYPE.CYHY}).count()
         return results
@@ -102,7 +104,7 @@ class DashboardQueries:
     @staticmethod
     def get_tally_details(db):
         results = dict()
-        stage_status_counts = db.tallies.aggregate([
+        stage_status_counts = list(db.tallies.aggregate([
             {
                 '$group': {
                     '_id':'null',
@@ -132,10 +134,10 @@ class DashboardQueries:
                     'vs_running':1
                 }
             }
-        ])
+        ], cursor={}))
 
         for queue_name in ['ns1_waiting','ns1_running','ns2_waiting','ns2_running','ps_waiting','ps_running','vs_waiting','vs_running']:
-            results[queue_name] = stage_status_counts['result'][0][queue_name]
+            results[queue_name] = stage_status_counts[0][queue_name]
 
         return results
 
@@ -170,7 +172,7 @@ class DashboardQueries:
         results['vulnerable_hosts'] = len(db.tickets.find({'open': True, 'owner': {'$in': election_orgs}, 'false_positive': False}).distinct(
             'ip_int'))
 
-        tix = db.tickets.aggregate([
+        tix = list(db.tickets.aggregate([
             {'$match': {'open': True, 'owner': {'$in': election_orgs}, 'false_positive': False}},
             {'$group': {'_id': {},
                         'low_tix_open': {'$sum': {'$cond': [{'$eq': ['$details.severity', 1]}, 1, 0]}},
@@ -178,13 +180,13 @@ class DashboardQueries:
                         'high_tix_open': {'$sum': {'$cond': [{'$eq': ['$details.severity', 3]}, 1, 0]}},
                         'critical_tix_open': {'$sum': {'$cond': [{'$eq': ['$details.severity', 4]}, 1, 0]}},
                         'total_tix_open': {'$sum': 1}
-                        }}])
+                        }}], cursor={}))
 
-        results['open_tickets'] = {'low':tix['result'][0]['low_tix_open'],
-                                   'medium':tix['result'][0]['medium_tix_open'],
-                                   'high':tix['result'][0]['high_tix_open'],
-                                   'critical':tix['result'][0]['critical_tix_open'],
-                                   'total':tix['result'][0]['total_tix_open']}
+        results['open_tickets'] = {'low':tix[0]['low_tix_open'],
+                                   'medium':tix[0]['medium_tix_open'],
+                                   'high':tix[0]['high_tix_open'],
+                                   'critical':tix[0]['critical_tix_open'],
+                                   'total':tix[0]['total_tix_open']}
 
         results['reports'] = db.reports.find({'owner': {'$in': election_orgs}}).count()
         return results
