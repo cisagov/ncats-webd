@@ -141,7 +141,7 @@ def get_cybex_dataframe(db, start_date, ticket_severity):
         df.time_closed = pd.to_datetime(df.time_closed, utc=True)
         df.time_opened = pd.to_datetime(df.time_opened, utc=True)
 
-        old_delta = np.timedelta64(GRAPH_BUCKET_CUTOFF_DAYS, 'D')
+        old_delta = np.timedelta64(TICKETS_CLOSED_PAST_DAYS, 'D')
 
         for start_of_day, values in results_df.iterrows():
             end_of_day = start_of_day + np.timedelta64(1, 'D') - np.timedelta64(1, 'ns')
