@@ -67,7 +67,7 @@ class DashboardQueries:
                                                       'high_open':0}
 
         # Reverse sort on critical_open, then high_open, then normal (alphabetical) sort on org_name
-        sorted_ticket_data = sorted(tix[0]['ticket_data'].values(),
+        sorted_ticket_data = sorted(results['ticket_data'].values(),
             key=lambda(v):(-v['critical_open'], -v['high_open'], v['org_name']))
         return sorted_ticket_data
 
