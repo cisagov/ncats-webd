@@ -105,7 +105,7 @@ def closed_in_date_range_closed_ticket_age_pl(org_list, start_date, end_date):
 #            ], database.TICKET_COLLECTION
 
 def run_pipeline((pipeline, collection), db):
-    results = db[collection].aggregate(pipeline, allowDiskUse=True, explain=True)
+    results = db[collection].aggregate(pipeline, allowDiskUse=True, explain=True, cursor={})
 
 def congressional_data(db,start_date,end_date):
     if start_date == None:
@@ -175,7 +175,7 @@ def congressional_data(db,start_date,end_date):
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         print '{}:'.format(group_name)
         (pipeline, collection) = closed_in_date_range_closed_ticket_age_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate(pipeline, cursor={})
+        output = db[collection].aggregate (pipeline, cursor={})
         df = DataFrame(list(output))
         median_days_to_mitigate_criticals = round(df.loc[df['severity'] == 4]['duration_to_close'].median() / (24*60*60*1000.0))
         if isnull(median_days_to_mitigate_criticals):
@@ -212,7 +212,7 @@ def congressional_data(db,start_date,end_date):
     # Use "_owners" lists here because we DO want to include descendent orgs in these metrics
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         (pipeline, collection) = tickets_opened_count_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate(pipeline)
+        output = db[collection].aggregate(pipeline, cursor={})
         print '{}:'.format(group_name)
         for i in ('critical', 'high', 'medium', 'low'):
             try:
@@ -229,7 +229,7 @@ def congressional_data(db,start_date,end_date):
     # Use "_owners" lists here because we DO want to include descendent orgs in these metrics
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         (pipeline, collection) = closed_ticket_count_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate(pipeline)
+        output = db[collection].aggregate(pipeline, cursor={})
         print '{}:'.format(group_name)
         for i in ('critical', 'high', 'medium', 'low'):
             try:

@@ -32,7 +32,8 @@ def get_first_snapshot_times(db, owners):
             {'$group': {'_id':'$owner',
                         'first_snapshot_start_time': {'$first':'$start_time'}}},
             {'$sort': {'_id':1}}
-            ])
+            ], cursor={})
+
     first_snapshot_time_dict = dict()
     for i in first_snapshot_time_by_owner.get('result'):
         first_snapshot_time_dict[i['_id']] = i['first_snapshot_start_time']
