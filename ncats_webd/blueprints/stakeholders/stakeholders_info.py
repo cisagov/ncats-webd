@@ -25,16 +25,17 @@ import csv
 import StringIO
 
 def get_first_snapshot_times(db, owners):
-    first_snapshot_time_by_owner = db.SnapshotDoc.collection.aggregate([
+    first_snapshot_time_by_owner = list(db.SnapshotDoc.collection.aggregate([
             {'$match': {'owner': {'$in':owners}}},
             {'$project': {'owner':1, 'start_time':1}},
             {'$sort': {'owner':1, 'start_time':1}},
             {'$group': {'_id':'$owner',
                         'first_snapshot_start_time': {'$first':'$start_time'}}},
             {'$sort': {'_id':1}}
-            ])
+            ], cursor={}))
+
     first_snapshot_time_dict = dict()
-    for i in first_snapshot_time_by_owner.get('result'):
+    for i in first_snapshot_time_by_owner:
         first_snapshot_time_dict[i['_id']] = i['first_snapshot_start_time']
     return first_snapshot_time_dict
 

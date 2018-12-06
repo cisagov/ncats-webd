@@ -130,7 +130,7 @@ def top_vulns(FY_START, FY_END, db, severity=0):
         {'$group': {'_id':{'source_id':'$source_id', 'details.name':'$details.name'}, 'count':{'$sum':1}}},
         {'$sort': {'count':-1}}
         ]
-    result = db.tickets.aggregate(pipeline)
+    result = db.tickets.aggregate(pipeline, cursor={})
     total = 0
     lvl = ''
     if severity == 1:
@@ -191,7 +191,7 @@ def top_OS(FY_START, FY_END, db):
     {'$group': {'_id':{'type':'$_id.type'}, 'count':{'$sum':1}}},
     {'$sort': {'count':-1}}
     ]
-    result = db.host_scans.aggregate(pipeline, allowDiskUse=True)
+    result = db.host_scans.aggregate(pipeline, allowDiskUse=True, cursor={})
     total = 0
     for j in range(0, len(result['result'])):
         total = total + int(result['result'][j]['count'])
@@ -237,7 +237,7 @@ def top_vuln_services(FY_START, FY_END, db):
     {'$group': {'_id':{'service':'$_id.service'}, 'count':{'$sum':1}}},
     {'$sort': {'count':-1}}
     ]
-    result = db.vuln_scans.aggregate(pipeline)
+    result = db.vuln_scans.aggregate(pipeline, cursor={})
     total = 0
     for j in range(0, len(result['result'])):
         total = total + int(result['result'][j]['count'])
@@ -285,7 +285,7 @@ def top_services(FY_START, FY_END, db):
     {'$group': {'_id':{'service': '$_id.service'}, 'count':{'$sum':1}}},
     {'$sort': {'count':-1}}
     ]
-    result = db.port_scans.aggregate(pipeline, allowDiskUse=True)
+    result = db.port_scans.aggregate(pipeline, allowDiskUse=True, cursor={})
     total = 0
     for j in range(0, len(result['result'])):
         total = total + int(result['result'][j]['count'])
@@ -390,7 +390,7 @@ Notes:\n
             { '$group': { '_id': {'ip_int':'$ip_int'}}},
             { '$group': { '_id':None, 'count': {'$sum':1}}}
         ]
-        pipeline_result = db.host_scans.aggregate(pipeline)['result']
+        pipeline_result = db.host_scans.aggregate(pipeline, cursor={})['result']
         if len(pipeline_result) > 0:
             result[host_group] = pipeline_result[0]['count']
             total_hosts_scanned += result[host_group]
@@ -511,28 +511,28 @@ def avg_cvss_score(FY_START, FY_END, db):
                             'cvss_max':{'$max':'$cvss_base_score'}, } }, # host cvss is the max of any cvss for that host
                  {'$group': {'_id':{},
                             'cvss_avg':{'$avg':'$cvss_max'}, } }, ] # get avg of all host maximums
-    overall_cvss = db.vuln_scans.aggregate(pipeline)
+    overall_cvss = db.vuln_scans.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'time': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
                  {'$group': {'_id':{'ip_int':'$ip_int', 'snapshots':'$snapshots',},
                             'cvss_max':{'$max':'$cvss_base_score'}, } }, # host cvss is the max of any cvss for that host
                  {'$group': {'_id':{},
                             'cvss_avg':{'$avg':'$cvss_max'}, } }, ] # get avg of all host maximums
-    fed_cvss = db.vuln_scans.aggregate(pipeline)
+    fed_cvss = db.vuln_scans.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'time': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
                  {'$group': {'_id':{'ip_int':'$ip_int', 'snapshots':'$snapshots',},
                             'cvss_max':{'$max':'$cvss_base_score'}, } }, # host cvss is the max of any cvss for that host
                  {'$group': {'_id':{},
                             'cvss_avg':{'$avg':'$cvss_max'}, } }, ] # get avg of all host maximums
-    sltt_cvss = db.vuln_scans.aggregate(pipeline)
+    sltt_cvss = db.vuln_scans.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'time': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
                  {'$group': {'_id':{'ip_int':'$ip_int', 'snapshots':'$snapshots',},
                             'cvss_max':{'$max':'$cvss_base_score'}, } }, # host cvss is the max of any cvss for that host
                  {'$group': {'_id':{},
                             'cvss_avg':{'$avg':'$cvss_max'}, } }, ] # get avg of all host maximums
-    private_cvss = db.vuln_scans.aggregate(pipeline)
+    private_cvss = db.vuln_scans.aggregate(pipeline, cursor={})
 
     output = {}
     if len(overall_cvss.get('result')) > 0:
@@ -569,7 +569,7 @@ def unique_vulns(FY_START, FY_END, db):
                             'critical':{'$sum':{'$cond':[{'$eq':['$_id.severity',4]}, 1, 0]}},
                             'total':{'$sum':1},
                             } }, ]
-    overall_uniq_vulns = db.tickets.aggregate(pipeline)
+    overall_uniq_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
@@ -580,7 +580,7 @@ def unique_vulns(FY_START, FY_END, db):
                             'critical':{'$sum':{'$cond':[{'$eq':['$_id.severity',4]}, 1, 0]}},
                             'total':{'$sum':1},
                             } }, ]
-    fed_uniq_vulns = db.tickets.aggregate(pipeline)
+    fed_uniq_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
@@ -591,7 +591,7 @@ def unique_vulns(FY_START, FY_END, db):
                             'critical':{'$sum':{'$cond':[{'$eq':['$_id.severity',4]}, 1, 0]}},
                             'total':{'$sum':1},
                             } }, ]
-    sltt_uniq_vulns = db.tickets.aggregate(pipeline)
+    sltt_uniq_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
@@ -602,7 +602,7 @@ def unique_vulns(FY_START, FY_END, db):
                             'critical':{'$sum':{'$cond':[{'$eq':['$_id.severity',4]}, 1, 0]}},
                             'total':{'$sum':1},
                             } }, ]
-    private_uniq_vulns = db.tickets.aggregate(pipeline)
+    private_uniq_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     '''
     pipeline = [ {'$match': {'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
@@ -614,7 +614,7 @@ def unique_vulns(FY_START, FY_END, db):
                             'critical':{'$sum':{'$cond':[{'$eq':['$_id.severity',4]}, 1, 0]}},
                             'total':{'$sum':1},
                             } }, ]
-    other_uniq_vulns = db.tickets.aggregate(pipeline)
+    other_uniq_vulns = db.tickets.aggregate(pipeline, cursor={})
     '''
 
     if len(overall_uniq_vulns.get('result')) > 0:
@@ -804,7 +804,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              'critical':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                              'total':{'$sum':1},
                              } }, ]
-    overall_vulns = db.tickets.aggregate(pipeline)
+    overall_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
                  {'$group': {'_id': { },
@@ -814,7 +814,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              'critical':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                              'total':{'$sum':1},
                              } }, ]
-    fed_vulns = db.tickets.aggregate(pipeline)
+    fed_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
                  {'$group': {'_id': { },
@@ -824,7 +824,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              'critical':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                              'total':{'$sum':1},
                              } }, ]
-    sltt_vulns = db.tickets.aggregate(pipeline)
+    sltt_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
                  {'$group': {'_id': { },
@@ -834,7 +834,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              'critical':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                              'total':{'$sum':1},
                              } }, ]
-    private_vulns = db.tickets.aggregate(pipeline)
+    private_vulns = db.tickets.aggregate(pipeline, cursor={})
 
     '''
     pipeline = [ {'$match': {'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
@@ -845,7 +845,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              'critical':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                              'total':{'$sum':1},
                              } }, ]
-    other_vulns = db.tickets.aggregate(pipeline)
+    other_vulns = db.tickets.aggregate(pipeline, cursor={})
     '''
 
     if len(overall_vulns.get('result')) > 0:
