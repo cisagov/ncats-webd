@@ -216,7 +216,7 @@ def congressional_data(db,start_date,end_date):
         print '{}:'.format(group_name)
         for i in ('critical', 'high', 'medium', 'low'):
             try:
-                print '  {}: {:,}'.format(i.title(), output[0][i])#output.get('result')[0].get(i))
+                print '  {}: {:,}'.format(i.title(), output[0][i])
                 myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Detected'.format(i.title()):'{:,}'.format(output[0][i])}
             except IndexError:
                 print '  {}: 0'.format(i.title())
