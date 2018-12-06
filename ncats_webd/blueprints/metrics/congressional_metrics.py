@@ -175,7 +175,7 @@ def congressional_data(db,start_date,end_date):
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         print '{}:'.format(group_name)
         (pipeline, collection) = closed_in_date_range_closed_ticket_age_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate (pipeline, cursor={})
+        output = db[collection].aggregate(pipeline, cursor={})
         df = DataFrame(list(output))
         median_days_to_mitigate_criticals = round(df.loc[df['severity'] == 4]['duration_to_close'].median() / (24*60*60*1000.0))
         if isnull(median_days_to_mitigate_criticals):
@@ -212,12 +212,12 @@ def congressional_data(db,start_date,end_date):
     # Use "_owners" lists here because we DO want to include descendent orgs in these metrics
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         (pipeline, collection) = tickets_opened_count_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate(pipeline, cursor={})
+        output = list(db[collection].aggregate(pipeline, cursor={}))
         print '{}:'.format(group_name)
         for i in ('critical', 'high', 'medium', 'low'):
             try:
-                print '  {}: {:,}'.format(i.title(), output.get('result')[0].get(i))
-                myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Detected'.format(i.title()):'{:,}'.format(output.get('result')[0].get(i))}
+                print '  {}: {:,}'.format(i.title(), output[0][i])
+                myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Detected'.format(i.title()):'{:,}'.format(output[0][i])}
             except IndexError:
                 print '  {}: 0'.format(i.title())
                 myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Detected'.format(i.title()):'0'}
@@ -229,12 +229,12 @@ def congressional_data(db,start_date,end_date):
     # Use "_owners" lists here because we DO want to include descendent orgs in these metrics
     for (stakeholder_list, group_name) in ((active_fed_owners, 'FEDERAL'), (active_fed_executive_owners, 'FEDERAL EXECUTIVE'), (active_fed_cfo_owners, 'FEDERAL EXECUTIVE - CFO ACT'), (active_fed_exec_non_cfo_owners, 'FEDERAL EXECUTIVE - NON-CFO ACT')):
         (pipeline, collection) = closed_ticket_count_pl(stakeholder_list, start_date, end_date)
-        output = db[collection].aggregate(pipeline, cursor={})
+        output = list(db[collection].aggregate(pipeline, cursor={}))
         print '{}:'.format(group_name)
         for i in ('critical', 'high', 'medium', 'low'):
             try:
-                print '  {}: {:,}'.format(i.title(), output.get('result')[0].get(i))
-                myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Mitigated'.format(i.title()):'{:,}'.format(output.get('result')[0].get(i))}
+                print '  {}: {:,}'.format(i.title(), output[0][i])
+                myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Mitigated'.format(i.title()):'{:,}'.format(output[0][i])}
             except IndexError:
                 print '  {}: 0'.format(i.title())
                 myarg = {group_name.replace(" ", "_").replace("-","_") + '_{}_New_Vulns_Mitigated'.format(i.title()):'0'}
