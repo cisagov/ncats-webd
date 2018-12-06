@@ -118,8 +118,8 @@ def main():
     db = database.db_from_config(args['--section'])
     # print write_stakeholders_csv(db).getvalue()
     stakeholders = write_stakeholders(db)
-    for i in stakeholders:
-        print i
+    # for i in stakeholders:
+    #     print i
 
 if __name__=='__main__':
     main()
