@@ -177,7 +177,6 @@ def congressional_data(db,start_date,end_date):
         (pipeline, collection) = closed_in_date_range_closed_ticket_age_pl(stakeholder_list, start_date, end_date)
         output = db[collection].aggregate(pipeline, cursor={})
         df = DataFrame(list(output))
-        print(df)
         median_days_to_mitigate_criticals = round(df.loc[df['severity'] == 4]['duration_to_close'].median() / (24*60*60*1000.0))
         if isnull(median_days_to_mitigate_criticals):
             print '  Median time to mitigate Critical vulnerabilities: No Critical vulnerabilities mitigated'
