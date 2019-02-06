@@ -27,7 +27,7 @@ def main():
     global __doc__
     args = docopt(__doc__, version='v0.0.2')
 
-    command = "gunicorn --bind '[::]:5000' --log-level=debug -k {!s} --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 \"".format(async_mode)
+    command = "gunicorn --bind '[::]:5000' --log-level=debug --timeout=90 -k {!s} --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 \"".format(async_mode)
     command += "ncats_webd.ncats_webd:create_app("
 
     arg_list = []
