@@ -12,27 +12,38 @@ Options:
   -s SECTION --section=SECTION   Configuration section to use.
 '''
 
+# standard python libraries
 import StringIO
+from unicodecsv import DictWriter
 
+# third-party libraries (install with pip)
 from docopt import docopt
 
+# intra-project modules
 from cyhy.db import database
 
 def write_contacts_csv(db):
-    all_request_docs = db.RequestDoc.find().sort('_id',1)
+    all_request_docs = db.RequestDoc.find().sort('_id', 1)
     output = StringIO.StringIO()
-    output.write('Org ID,Org Name,Org Type,Org Retired,Contact Name,Contact Email,Contact Type\n')
+
+    fields = ('Org ID', 'Org Name', 'Org Type', 'Org Retired',
+              'Contact Name', 'Contact Email', 'Contact Type')
+
+    writer = DictWriter(output, fields)
+    writer.writeheader()
+
     for doc in all_request_docs:
         for contact in doc['agency'].get('contacts', []):
-            output.write('{},"{}",{},{},"{}",{},{}\n'.format(
-                doc['_id'],
-                doc['agency']['name'],
-                doc['agency'].get('type', 'N/A'),
-                doc.get('retired', False),
-                contact.get('name', 'N/A'),
-                contact.get('email', 'N/A'),
-                contact.get('type', 'N/A')
-            ))
+            row = {
+                'Org ID': doc['_id'],
+                'Org Name': doc['agency']['name'],
+                'Org Type': doc['agency'].get('type', 'N/A'),
+                'Org Retired': doc.get('retired', False),
+                'Contact Name': contact.get('name', 'N/A'),
+                'Contact Email': contact.get('email', 'N/A'),
+                'Contact Type': contact.get('type', 'N/A')
+            }
+            writer.writerow(row)
 
     return output
 
