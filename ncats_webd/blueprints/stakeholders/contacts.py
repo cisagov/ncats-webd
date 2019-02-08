@@ -14,7 +14,7 @@ Options:
 
 # standard python libraries
 import StringIO
-from unicodecsv import DictWriter
+from csv import DictWriter
 
 # third-party libraries (install with pip)
 from docopt import docopt
