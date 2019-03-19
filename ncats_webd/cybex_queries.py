@@ -47,19 +47,24 @@ def get_open_tickets_dataframe(db, ticket_severity):
         x['days_to_report'] = None
 
         for snap_id in x.get('snapshots', []):
-            first_report_time = first_report_time_cache.get(snap_id)
-            if not first_report_time:
+            x['first_reported'] = first_report_time_cache.get(snap_id)
+            if x['first_reported']:
+                # Found this snapshot's report time in the cache
+                break
+            else:
                 # Not found in the cache, so make a database call
                 first_report = db.reports.find_one(
                                 {'snapshot_oid': snap_id})
                 if first_report:
                     x['first_reported'] = first_report.get('generated_time')
                     first_report_time_cache[snap_id] = x['first_reported']
-                    x['days_since_first_reported'] = (
-                        now - x['first_reported']).total_seconds() / (60*60*24)
-                    x['days_to_report'] = x['days_since_first_detected'] - \
-                        x['days_since_first_reported']
                     break
+
+        if x['first_reported']:
+            x['days_since_first_reported'] = (
+                now - x['first_reported']).total_seconds() / (60*60*24)
+            x['days_to_report'] = x['days_since_first_detected'] - \
+                x['days_since_first_reported']
 
         if x.get('snapshots'):
             del(x['snapshots'])
