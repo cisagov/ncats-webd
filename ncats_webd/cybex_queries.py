@@ -170,7 +170,7 @@ def csv_get_open_tickets(db, ticket_severity):
     if not results_df.empty:
         #TODO date_format param not getting picked up.  Processing manually with apply
         results_df['time_opened'] = results_df['time_opened'].apply(lambda x : x.strftime('%Y-%m-%d %H:%M:%S')) # excel crap
-        results_df['first_reported'] = results_df['first_reported'].apply(lambda x : x.strftime('%Y-%m-%d %H:%M:%S') if type(x) == pd.Timestamp else None)
+        results_df['first_reported'] = results_df['first_reported'].apply(lambda x : x.strftime('%Y-%m-%d %H:%M:%S') if type(x) == pd.tslib.Timestamp else None)
         # Round values for 'days' fields to 1 decimal place
         results_df['days_since_first_detected'] = results_df['days_since_first_detected'].round(decimals=1)
         results_df['days_since_first_reported'] = results_df['days_since_first_reported'].round(decimals=1)
