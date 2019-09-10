@@ -21,7 +21,15 @@ def create_app(debug=None, local=None, secret_key=None, async_mode='gevent', con
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     cache.init_app(app)
-    socketio.init_app(app, async_mode=async_mode)
+
+    # Manually setting cros_allowed_origins to allow all due to a change in July
+    # (2019) per https://github.com/miguelgrinberg/python-engineio/commit/7548f704a0a3000b7ac8a6c88796c4ae58aa9c37
+    # Previously the default was this behavior, but now the default is to the
+    # host address. The configuration of our application does not work with this
+    # change so I am forcing the old behavior. We may want to look into providing
+    # CORS for websocket connections in the future.
+    socketio.init_app(app, async_mode=async_mode, cors_allowed_origins="*")
+
     install_secret_key(app, secret_key)
     register_blueprints(app)
     using_yaml = str(config_filename).lower().endswith(('.yml', '.yaml'))
