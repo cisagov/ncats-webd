@@ -22,7 +22,7 @@ def create_app(debug=None, local=None, secret_key=None, async_mode='gevent', con
     app.logger.setLevel(gunicorn_logger.level)
     cache.init_app(app)
 
-    # Manually setting cros_allowed_origins to allow all due to a change in July
+    # Manually setting cors_allowed_origins to allow all due to a change in July
     # (2019) per https://github.com/miguelgrinberg/python-engineio/commit/7548f704a0a3000b7ac8a6c88796c4ae58aa9c37
     # Previously the default resulted in similar behavior, but now the default
     # is to use the host address in the request. The configuration of our
