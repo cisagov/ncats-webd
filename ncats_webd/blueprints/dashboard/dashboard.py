@@ -51,7 +51,7 @@ class TicketFeed(object):
 
     def __check_database(self):
         now = util.utcnow()
-        tickets = self.__db.tickets.find({'last_change':{'$gt':self.__since}},
+        tickets = self.__db.tickets.find({'source':'nessus', 'last_change':{'$gt':self.__since}},
                                          {'_id':1,'owner':1, 'details':1, 'events.action':1, 'events':{'$slice':-1}}) \
                                          .sort([('last_change',-1)])
         tickets = list(tickets)

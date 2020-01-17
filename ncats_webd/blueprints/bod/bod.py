@@ -50,7 +50,7 @@ def schedule_broadcaster():
 
 def get_bod_open_tickets_dataframe(bod_start_date):
     bod_owners = current_app.db.RequestDoc.get_all_descendants('EXECUTIVE')
-    tix = current_app.db.TicketDoc.find({'details.severity':4, 'false_positive':False, 'owner':{'$in':bod_owners}, 'open':True},
+    tix = current_app.db.TicketDoc.find({'source': 'nessus', 'details.severity':4, 'false_positive':False, 'owner':{'$in':bod_owners}, 'open':True},
         {'_id':False, 'owner':True, 'time_opened':True, 'ip':True, 'port':True, 'details.name':True, 'details.cve':True})
     tix = list(tix)
     for x in tix:
@@ -76,7 +76,7 @@ def get_bod_dataframe(bod_start_date):
 
     bod_owners = current_app.db.RequestDoc.get_all_descendants('EXECUTIVE')
 
-    backlog_tix = current_app.db.TicketDoc.find({'details.severity':4, 'owner':{'$in':bod_owners},
+    backlog_tix = current_app.db.TicketDoc.find({'source': 'nessus', 'details.severity':4, 'owner':{'$in':bod_owners},
                      'time_opened':{'$lte':bod_start_date}, 'false_positive':False,
                      '$or':[{'time_closed':{'$gte':bod_start_date}}, {'time_closed':None}] },
                      {'_id':False, 'time_closed':True})
@@ -99,7 +99,7 @@ def get_bod_dataframe(bod_start_date):
     else:
         df_backlog = DataFrame()
     # Calculate Buckets
-    tix = current_app.db.TicketDoc.find({'details.severity':4, 'false_positive':False, 'owner':{'$in':bod_owners},
+    tix = current_app.db.TicketDoc.find({'source': 'nessus', 'details.severity':4, 'false_positive':False, 'owner':{'$in':bod_owners},
                             '$or':[{'time_closed':{'$gte':bod_start_date}}, {'time_closed':None}]},
                             {'_id':False, 'time_opened':True, 'time_closed':True})
     df = DataFrame(list(tix))

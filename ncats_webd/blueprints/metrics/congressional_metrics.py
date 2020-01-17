@@ -29,7 +29,7 @@ from pandas import DataFrame, isnull
 
 def tickets_opened_count_pl(org_list, start_date, end_date):
     return [
-           {'$match': {'false_positive':False, 'owner':{'$in':org_list},
+           {'$match': {'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
                        'time_opened':{'$gte':start_date, '$lt':end_date}}
                       },
            {'$group': {'_id': {},
@@ -44,7 +44,7 @@ def tickets_opened_count_pl(org_list, start_date, end_date):
 
 # def open_ticket_count_pl(org_list, start_date, end_date):
 #     return [
-#            {'$match': {'open':True, 'false_positive':False, 'owner':{'$in':org_list},
+#            {'$match': {'open':True, 'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
 #                        'time_opened':{'$gte':start_date, '$lt':end_date}}
 #                       },
 #            {'$group': {'_id': {},
@@ -59,7 +59,7 @@ def tickets_opened_count_pl(org_list, start_date, end_date):
 
 def closed_ticket_count_pl(org_list, start_date, end_date):
     return [
-           {'$match': {'open':False, 'false_positive':False, 'owner':{'$in':org_list},
+           {'$match': {'open':False, 'source': 'nessus','false_positive':False, 'owner':{'$in':org_list},
                        'time_closed':{'$gte':start_date, '$lt':end_date}}
                       },
            {'$group': {'_id': {},
@@ -74,9 +74,9 @@ def closed_ticket_count_pl(org_list, start_date, end_date):
 
 def opened_in_date_range_open_ticket_age_pl(org_list, start_date, end_date):
     return [
-           {'$match': {'$or': [{'open':True, 'false_positive':False, 'owner':{'$in':org_list},
+           {'$match': {'$or': [{'open':True, 'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
                                 'time_opened':{'$gte':start_date, '$lt':end_date}},
-                               {'open':False, 'false_positive':False, 'owner':{'$in':org_list},
+                               {'open':False, 'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
                                 'time_opened':{'$gte':start_date, '$lt':end_date}, 'time_closed':{'$gte':end_date}}]}
                         },
            {'$project': {'severity':'$details.severity',
@@ -86,7 +86,7 @@ def opened_in_date_range_open_ticket_age_pl(org_list, start_date, end_date):
 
 def closed_in_date_range_closed_ticket_age_pl(org_list, start_date, end_date):
     return [
-           {'$match': {'open':False, 'false_positive':False, 'owner':{'$in':org_list},
+           {'$match': {'open':False, 'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
                        'time_closed':{'$gte':start_date, '$lt':end_date}},
                         },
            {'$project': {'severity':'$details.severity',
@@ -96,7 +96,7 @@ def closed_in_date_range_closed_ticket_age_pl(org_list, start_date, end_date):
 
 # def opened_in_date_range_closed_ticket_age_pl(org_list, start_date, end_date):
 #     return [
-#            {'$match': {'open':False, 'false_positive':False, 'owner':{'$in':org_list},
+#            {'$match': {'open':False, 'source': 'nessus', 'false_positive':False, 'owner':{'$in':org_list},
 #                        'time_opened':{'$gte':start_date, '$lt':end_date}},
 #                         },
 #            {'$project': {'severity':'$details.severity',
