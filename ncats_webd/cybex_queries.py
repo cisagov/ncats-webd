@@ -17,6 +17,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
     fed_executive_owners = db.RequestDoc.get_all_descendants('EXECUTIVE')
     tix = db.TicketDoc.find(
         {
+            'source': 'nessus',
             'details.severity': ticket_severity,
             'false_positive': False,
             'owner': {
@@ -80,6 +81,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     fed_executive_owners = db.RequestDoc.get_all_descendants('EXECUTIVE')
     tix = db.TicketDoc.find(
         {
+            'source': 'nessus',
             'time_closed': {
                 '$gte': closed_since_date
             },
@@ -121,6 +123,7 @@ def get_cybex_dataframe(db, start_date, ticket_severity):
     # Calculate Buckets
     tix = db.TicketDoc.find(
         {
+            'source': 'nessus',
             'details.severity': ticket_severity,
             'false_positive': False,
             'owner': {

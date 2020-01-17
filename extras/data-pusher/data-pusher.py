@@ -73,7 +73,7 @@ def get_ticket_severity_counts(db, stakeholders):
         else:
             current_org_list = [org['_id']]
         tix = db.tickets.aggregate([
-            {'$match':{'open':True, 'owner':{'$in':current_org_list}, 'false_positive':False}},
+            {'$match':{'open':True, 'source': 'nessus', 'owner':{'$in':current_org_list}, 'false_positive':False}},
             {'$group': {'_id': {},
                         'critical_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',4]}, 1, 0]}},
                         'high_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',3]}, 1, 0]}}
@@ -98,10 +98,10 @@ def get_overall_metrics(db, stakeholders):
     results['stakeholders'] = len(stakeholders)
     results['addresses'] = db.hosts.count()
     results['hosts'] = db.hosts.find({'state.up':True}).count()
-    results['vulnerable_hosts'] = len(db.tickets.find({'open':True, 'false_positive':False}).distinct('ip_int'))
+    results['vulnerable_hosts'] = len(db.tickets.find({'open':True, 'source': 'nessus', 'false_positive':False}).distinct('ip_int'))
 
     tix = db.tickets.aggregate([
-        {'$match':{'open':True, 'false_positive':False}},
+        {'$match':{'open':True, 'source': 'nessus', 'false_positive':False}},
         {'$group': {'_id': {},
              'low_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
              'medium_tix_open':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
@@ -155,10 +155,10 @@ def get_tally_details(db):
 
 def get_open_ticket_loc_by_severity(db, severity=None):
     if severity != None:
-        tickets = db.TicketDoc.collection.find({'open':True, 'details.severity':severity, 'loc.0':{'$ne':None}},
+        tickets = db.TicketDoc.collection.find({'open':True, 'source': 'nessus', 'details.severity':severity, 'loc.0':{'$ne':None}},
                                                {'_id':0,'loc':1,'details.severity':1})
     else:
-        tickets = db.TicketDoc.collection.find({'open':True, 'loc.0':{'$ne':None}},{'_id':0,'loc':1,'details.severity':1})
+        tickets = db.TicketDoc.collection.find({'open':True, 'source': 'nessus', 'loc.0':{'$ne':None}},{'_id':0,'loc':1,'details.severity':1})
     return list(tickets)
 
 def get_running_ips(db):

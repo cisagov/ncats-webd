@@ -89,16 +89,16 @@ def ticket_counts_by_fiscal_year(db, current_fy_start):
     while True:
         next_fy_start = current_fy_start + relativedelta(years=1)
         # Tickets opened during the fiscal year
-        tix_opened = db.TicketDoc.find({'time_opened':{'$gte':current_fy_start, '$lt':next_fy_start}, 'false_positive':False}).count()
+        tix_opened = db.TicketDoc.find({'source': 'nessus', 'time_opened':{'$gte':current_fy_start, '$lt':next_fy_start}, 'false_positive':False}).count()
         # Tickets open at any point during the fiscal year
-        open_tix = db.TicketDoc.find({'$or':[ {'$and': [{'time_opened':{'$gte':current_fy_start, '$lt':next_fy_start}}, {'false_positive':False}]},
+        open_tix = db.TicketDoc.find({'source': 'nessus', '$or':[ {'$and': [{'time_opened':{'$gte':current_fy_start, '$lt':next_fy_start}}, {'false_positive':False}]},
                                               {'$and': [{'time_closed':{'$gte':current_fy_start, '$lt':next_fy_start}}, {'false_positive':False}]},
                                               {'$and': [{'time_opened':{'$lt':current_fy_start}}, {'open':True}, {'false_positive':False}]},
                                               {'$and': [{'time_opened':{'$lt':current_fy_start}}, {'open':False},
                                                         {'time_closed':{'$gte':next_fy_start}}, {'false_positive':False}]}
                                             ]}).count()
         # Tickets closed during the fiscal year
-        tix_closed = db.TicketDoc.find({'time_closed':{'$gte':current_fy_start, '$lt':next_fy_start}, 'false_positive':False}).count()
+        tix_closed = db.TicketDoc.find({'source': 'nessus', 'time_closed':{'$gte':current_fy_start, '$lt':next_fy_start}, 'false_positive':False}).count()
 
         if tix_opened > 0:
             current_fiscal_year = str(current_fy_start.year + 1)
@@ -126,59 +126,59 @@ def all_time_opened_and_closed_breakdown(db):
     Total number of TicketDoc closed in CyHy since inception
     - Count of TicketDoc by Critical/High/Med/Low
     (Excluding False Positives)'''
-    all_time_opened_and_closed = {'total_opened_since_inception':"{:,d}".format(db.TicketDoc.find({'false_positive':False}).count())}
-    all_time_opened_and_closed['total_opened_since_inception_critical'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':4}).count())
-    all_time_opened_and_closed['total_opened_since_inception_high'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':3}).count())
-    all_time_opened_and_closed['total_opened_since_inception_medium'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':2}).count())
-    all_time_opened_and_closed['total_opened_since_inception_low'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':1}).count())
+    all_time_opened_and_closed = {'total_opened_since_inception':"{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False}).count())}
+    all_time_opened_and_closed['total_opened_since_inception_critical'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':4}).count())
+    all_time_opened_and_closed['total_opened_since_inception_high'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':3}).count())
+    all_time_opened_and_closed['total_opened_since_inception_medium'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':2}).count())
+    all_time_opened_and_closed['total_opened_since_inception_low'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':1}).count())
 
-    all_time_opened_and_closed['currently_open'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'open':True}).count())
-    all_time_opened_and_closed['currently_open_critical'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':4,'open':True}).count())
-    all_time_opened_and_closed['currently_open_high'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':3,'open':True}).count())
-    all_time_opened_and_closed['currently_open_medium'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':2,'open':True}).count())
-    all_time_opened_and_closed['currently_open_low'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':1,'open':True}).count())
+    all_time_opened_and_closed['currently_open'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'open':True}).count())
+    all_time_opened_and_closed['currently_open_critical'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':4,'open':True}).count())
+    all_time_opened_and_closed['currently_open_high'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':3,'open':True}).count())
+    all_time_opened_and_closed['currently_open_medium'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':2,'open':True}).count())
+    all_time_opened_and_closed['currently_open_low'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':1,'open':True}).count())
 
-    all_time_opened_and_closed['total_closed_since_inception'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'open':False}).count())
-    all_time_opened_and_closed['total_closed_since_inception_critical'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':4,'open':False}).count())
-    all_time_opened_and_closed['total_closed_since_inception_high'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':3,'open':False}).count())
-    all_time_opened_and_closed['total_closed_since_inception_medium'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':2,'open':False}).count())
-    all_time_opened_and_closed['total_closed_since_inception_low'] = "{:,d}".format(db.TicketDoc.find({'false_positive':False,'details.severity':1,'open':False}).count())
+    all_time_opened_and_closed['total_closed_since_inception'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'open':False}).count())
+    all_time_opened_and_closed['total_closed_since_inception_critical'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':4,'open':False}).count())
+    all_time_opened_and_closed['total_closed_since_inception_high'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':3,'open':False}).count())
+    all_time_opened_and_closed['total_closed_since_inception_medium'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':2,'open':False}).count())
+    all_time_opened_and_closed['total_closed_since_inception_low'] = "{:,d}".format(db.TicketDoc.find({'source': 'nessus', 'false_positive':False,'details.severity':1,'open':False}).count())
 
     return all_time_opened_and_closed
 
 def report(db, orgs, start, end):
     # opened during period
     opened_tix = list()
-    opened_tix.append(db.tickets.find({'time_opened':{'$gte':start, '$lte':end}, 'false_positive': False}).count())
-    opened_tix.append(db.tickets.find({'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': False}).count())
-    opened_tix.append(db.tickets.find({'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}, 'false_positive': False}).count())
-    opened_tix.append(db.tickets.find({'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': False}).count())
+    opened_tix.append(db.tickets.find({'source': 'nessus', 'time_opened':{'$gte':start, '$lte':end}, 'false_positive': False}).count())
+    opened_tix.append(db.tickets.find({'source': 'nessus', 'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': False}).count())
+    opened_tix.append(db.tickets.find({'source': 'nessus', 'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}, 'false_positive': False}).count())
+    opened_tix.append(db.tickets.find({'source': 'nessus', 'time_opened':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': False}).count())
     # closed during period
     closed_tix = list()
-    closed_tix.append(db.tickets.find({'time_closed':{'$gte':start, '$lte':end}}).count())
-    closed_tix.append(db.tickets.find({'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
-    closed_tix.append(db.tickets.find({'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
-    closed_tix.append(db.tickets.find({'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
+    closed_tix.append(db.tickets.find({'source': 'nessus', 'time_closed':{'$gte':start, '$lte':end}}).count())
+    closed_tix.append(db.tickets.find({'source': 'nessus', 'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
+    closed_tix.append(db.tickets.find({'source': 'nessus', 'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
+    closed_tix.append(db.tickets.find({'source': 'nessus', 'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
     # reports generated during period
     reports = list()
-    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}}).count())
-    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
-    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
-    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
+    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}}).count())
+    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
+    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
+    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
     return opened_tix, closed_tix, reports
 
 def total_open(db, orgs):
     open_non_FP_tix = dict()
-    open_non_FP_tix['total'] = '{:,}'.format(db.tickets.find({'open':True, 'false_positive': False}).count())
-    open_non_FP_tix['federal'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': False}).count())
-    open_non_FP_tix['SLTT'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['SLTT']}, 'false_positive': False}).count())
-    open_non_FP_tix['private'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': False}).count())
+    open_non_FP_tix['total'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'false_positive': False}).count())
+    open_non_FP_tix['federal'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': False}).count())
+    open_non_FP_tix['SLTT'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['SLTT']}, 'false_positive': False}).count())
+    open_non_FP_tix['private'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': False}).count())
 
     open_FP_tix = dict()
-    open_FP_tix['total'] = '{:,}'.format(db.TicketDoc.find({'open':True, 'false_positive': True}).count())
-    open_FP_tix['federal'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': True}).count())
-    open_FP_tix['SLTT'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['SLTT']}, 'false_positive': True}).count())
-    open_FP_tix['private'] = '{:,}'.format(db.tickets.find({'open':True, 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': True}).count())
+    open_FP_tix['total'] = '{:,}'.format(db.TicketDoc.find({'open':True, 'source': 'nessus', 'false_positive': True}).count())
+    open_FP_tix['federal'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['FEDERAL']}, 'false_positive': True}).count())
+    open_FP_tix['SLTT'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['SLTT']}, 'false_positive': True}).count())
+    open_FP_tix['private'] = '{:,}'.format(db.tickets.find({'open':True, 'source': 'nessus', 'owner': {'$in': orgs['PRIVATE']}, 'false_positive': True}).count())
     return open_non_FP_tix, open_FP_tix
 
 def print_activity(stats, title, start, end):

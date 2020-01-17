@@ -32,32 +32,32 @@ ALL_STAKEHOLDERS_BY_TYPE = dict()
 def vuln_ticket_counts(FY_START, FY_END, db, severity=0):
     #TODO: Modify print statements to use format() named parameters
     if severity == 0:
-        opened_before_and_still_open = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$lt':FY_START}, 'open':True}).count()
-        opened_before_and_closed_during = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}}).count()
-        opened_during_and_still_open = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True}).count()
-        opened_during_and_closed_during = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$lt':FY_END}}).count()
-        opened_during_and_closed_after = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$gte':FY_END}}).count()
-        fp_before = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$lt':FY_START}}).count()
-        fp_during = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$gte':FY_START, '$lt':FY_END}}).count()
-        fp_after = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$gte':FY_END}}).count()
+        opened_before_and_still_open = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$lt':FY_START}, 'open':True}).count()
+        opened_before_and_closed_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}}).count()
+        opened_during_and_still_open = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True}).count()
+        opened_during_and_closed_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$lt':FY_END}}).count()
+        opened_during_and_closed_after = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$gte':FY_END}}).count()
+        fp_before = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$lt':FY_START}}).count()
+        fp_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$gte':FY_START, '$lt':FY_END}}).count()
+        fp_after = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$gte':FY_END}}).count()
 
-        vulnerable_host_count = len(db.TicketDoc.find({'$or':[
+        vulnerable_host_count = len(db.TicketDoc.find({'source': 'nessus', '$or':[
             {'time_opened':{'$lt':FY_START}, 'open':True},
             {'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}},
             {'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True},
             {'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$lt':FY_END}},
             {'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$gte':FY_END}}]}).distinct('ip_int'))
     else:
-        opened_before_and_still_open = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$lt':FY_START}, 'open':True, 'details.severity':severity}).count()
-        opened_before_and_closed_during = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}).count()
-        opened_during_and_still_open = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True, 'details.severity':severity}).count()
-        opened_during_and_closed_during = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$lt':FY_END}, 'details.severity':severity}).count()
-        opened_during_and_closed_after = db.TicketDoc.find({'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$gte':FY_END}, 'details.severity':severity}).count()
-        fp_before = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$lt':FY_START}, 'details.severity':severity}).count()
-        fp_during = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}).count()
-        fp_after = db.TicketDoc.find({'false_positive':True, 'time_opened':{'$gte':FY_END}, 'details.severity':severity}).count()
+        opened_before_and_still_open = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$lt':FY_START}, 'open':True, 'details.severity':severity}).count()
+        opened_before_and_closed_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}).count()
+        opened_during_and_still_open = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True, 'details.severity':severity}).count()
+        opened_during_and_closed_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$lt':FY_END}, 'details.severity':severity}).count()
+        opened_during_and_closed_after = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'time_closed':{'$gte':FY_END}, 'details.severity':severity}).count()
+        fp_before = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$lt':FY_START}, 'details.severity':severity}).count()
+        fp_during = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}).count()
+        fp_after = db.TicketDoc.find({'source': 'nessus', 'false_positive':True, 'time_opened':{'$gte':FY_END}, 'details.severity':severity}).count()
 
-        vulnerable_host_count = len(db.TicketDoc.find({'$or':[
+        vulnerable_host_count = len(db.TicketDoc.find({'source': 'nessus', '$or':[
             {'time_opened':{'$lt':FY_START}, 'open':True, 'details.severity':severity},
             {'time_opened':{'$lt':FY_START}, 'time_closed':{'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity},
             {'time_opened':{'$gte':FY_START, '$lt':FY_END}, 'open':True, 'details.severity':severity},
@@ -120,13 +120,13 @@ def top_vulns(FY_START, FY_END, db, severity=0):
 
     if severity == 0:
         pipeline = [
-        {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}}},
+        {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}}},
         {'$group': {'_id':{'source_id':'$source_id', 'details_name':'$details.name'}, 'count':{'$sum':1}}},
         {'$sort': {'count':-1}}
         ]
     else:
         pipeline = [
-        {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}},
+        {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'details.severity':severity}},
         {'$group': {'_id':{'source_id':'$source_id', 'details_name':'$details.name'}, 'count':{'$sum':1}}},
         {'$sort': {'count':-1}}
         ]
@@ -430,10 +430,10 @@ Notes: None
     # +* This is the count of 'active hosts' (with at least one port open), at the time the report is generated.
     # +---""")
 
-    total_vuln_hosts = db.TicketDoc.find({'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}}).distinct('ip_int')
-    fed_vuln_hosts = db.TicketDoc.find({'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} }).distinct('ip_int')
-    sltt_vuln_hosts = db.TicketDoc.find({'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} }).distinct('ip_int')
-    private_vuln_hosts = db.TicketDoc.find({'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} }).distinct('ip_int')
+    total_vuln_hosts = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}}).distinct('ip_int')
+    fed_vuln_hosts = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} }).distinct('ip_int')
+    sltt_vuln_hosts = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} }).distinct('ip_int')
+    private_vuln_hosts = db.TicketDoc.find({'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} }).distinct('ip_int')
 
     if total_vuln_hosts > 0:
         output['fed_vuln_hosts_pct'] = round((float(len(fed_vuln_hosts)) / len(total_vuln_hosts))*100,1)
@@ -560,7 +560,7 @@ def print_avg_cvss_score(FY_START, FY_END, obj):
     print obj['description']
 
 def unique_vulns(FY_START, FY_END, db):
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
                  {'$group': {'_id': { },
                             'low':{'$sum':{'$cond':[{'$eq':['$_id.severity',1]}, 1, 0]}},
@@ -571,7 +571,7 @@ def unique_vulns(FY_START, FY_END, db):
                             } }, ]
     overall_uniq_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
                  {'$group': {'_id': { },
                             'low':{'$sum':{'$cond':[{'$eq':['$_id.severity',1]}, 1, 0]}},
@@ -582,7 +582,7 @@ def unique_vulns(FY_START, FY_END, db):
                             } }, ]
     fed_uniq_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
                  {'$group': {'_id': { },
                             'low':{'$sum':{'$cond':[{'$eq':['$_id.severity',1]}, 1, 0]}},
@@ -593,7 +593,7 @@ def unique_vulns(FY_START, FY_END, db):
                             } }, ]
     sltt_uniq_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
                  {'$group': {'_id': { },
                             'low':{'$sum':{'$cond':[{'$eq':['$_id.severity',1]}, 1, 0]}},
@@ -605,7 +605,7 @@ def unique_vulns(FY_START, FY_END, db):
     private_uniq_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
     '''
-    pipeline = [ {'$match': {'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
                  {'$group': {'_id': {'source_id':'$source_id', 'severity':'$details.severity'} } },
                  {'$group': {'_id': { },
                             'low':{'$sum':{'$cond':[{'$eq':['$_id.severity',1]}, 1, 0]}},
@@ -796,7 +796,7 @@ def print_unique_vulns(FY_START, FY_END, obj):
     print obj['description']
 
 def new_vuln_detections(FY_START, FY_END, db):
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END} } },
                  {'$group': {'_id': { },
                              'low':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
                              'medium':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
@@ -806,7 +806,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              } }, ]
     overall_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.FEDERAL]} } },
                  {'$group': {'_id': { },
                              'low':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
                              'medium':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
@@ -816,7 +816,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              } }, ]
     fed_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE['SLTT']} } },
                  {'$group': {'_id': { },
                              'low':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
                              'medium':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
@@ -826,7 +826,7 @@ def new_vuln_detections(FY_START, FY_END, db):
                              } }, ]
     sltt_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
-    pipeline = [ {'$match': {'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'false_positive':False, 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$in': ALL_ORGS_BY_TYPE[AGENCY_TYPE.PRIVATE]} } },
                  {'$group': {'_id': { },
                              'low':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
                              'medium':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
@@ -837,7 +837,7 @@ def new_vuln_detections(FY_START, FY_END, db):
     private_vulns = list(db.TicketDoc.collection.aggregate(pipeline, cursor={}))
 
     '''
-    pipeline = [ {'$match': {'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
+    pipeline = [ {'$match': {'source': 'nessus', 'time_opened': {'$gte':FY_START, '$lt':FY_END}, 'owner': {'$nin': FEDERAL+SLTT+PRIVATE} } },
                  {'$group': {'_id': { },
                              'low':{'$sum':{'$cond':[{'$eq':['$details.severity',1]}, 1, 0]}},
                              'medium':{'$sum':{'$cond':[{'$eq':['$details.severity',2]}, 1, 0]}},
