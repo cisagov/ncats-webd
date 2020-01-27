@@ -161,10 +161,10 @@ def report(db, orgs, start, end):
     closed_tix.append(db.tickets.find({'source': 'nessus', 'time_closed':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
     # reports generated during period
     reports = list()
-    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}}).count())
-    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
-    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
-    reports.append(db.reports.find({'source': 'nessus', 'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
+    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}}).count())
+    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['FEDERAL']}}).count())
+    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['SLTT']}}).count())
+    reports.append(db.reports.find({'report_types':REPORT_TYPE.CYHY, 'generated_time':{'$gte':start, '$lte':end}, 'owner': {'$in': orgs['PRIVATE']}}).count())
     return opened_tix, closed_tix, reports
 
 def total_open(db, orgs):
