@@ -1,23 +1,20 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ncats-webd',
-    version='0.0.2',
-    author='Mark Feldhousen Jr.',
-    author_email='mark.feldhousen@hq.dhs.gov',
+    name="ncats-webd",
+    version="0.0.2",
+    author="Mark Feldhousen Jr.",
+    author_email="mark.feldhousen@hq.dhs.gov",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    entry_points={
-        'console_scripts': [
-          'ncats-webd=ncats_webd.launch:main',
-        ],
-    },
-    #url='http://pypi.python.org/pypi/CyHy/',
-    license='LICENSE.txt',
-    description='Web Data for Cyber Hygiene',
-    #long_description=open('README.txt').read(),
+    entry_points={"console_scripts": ["ncats-webd=ncats_webd.launch:main",],},
+    # url='http://pypi.python.org/pypi/CyHy/',
+    license="LICENSE.txt",
+    description="Web Data for Cyber Hygiene",
+    # long_description=open('README.txt').read(),
     install_requires=[
+        "cffi >= 1.12.2",
         "cyhy-core >= 0.0.2",
         "numpy >= 1.7.1",
         "python-dateutil >= 2.2",
@@ -33,6 +30,6 @@ setup(
         "gunicorn >= 19.6.0",
         "gevent >= 1.2.0",
         "gevent-websocket >= 0.9.5",
-	"ipython",
-    ]
+        "ipython",
+    ],
 )
