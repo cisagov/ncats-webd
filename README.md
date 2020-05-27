@@ -1,8 +1,8 @@
 # NCATS-WebD(aemon)
 
 ## Getting Started
-```bash
-$ hg clone ssh://code.ncats.dhs.gov//hg/ncats-webd
+```console
+$ git clone git@github.com:jsf9k/ncats-webd.git
 $ cd ncats-webd
 $ docker build -t ncats-webd .
 ```
@@ -11,28 +11,28 @@ $ docker build -t ncats-webd .
 The fastest way to get started developing and testing will be to use docker. The following will start a development server and expose it at http://localhost:5000.
 
 **_Starting Development Server_**
-```bash
+```console
 $ docker run -d --name ncats-webd -v /private/etc/cyhy:/etc/cyhy -v $(pwd)/ncats_webd:/usr/src/ncats-webd/ncats_webd -p 5000:5000 ncats-webd -dls <db-section>
 ```
 
 When changes have been made to your code, you'll need to restart the server.
 
 **_Restarting Development Server_**
-```bash
+```console
 $ docker restart ncats-webd
 ```
 
 When you are finished developing stop the development server.
 
 **_Stopping Development Server_**
-```bash
+```console
 $ docker stop ncats-webd
 ```
 
 If you are finished with the project, you can clean up all images with the following:
 
 **_Cleaning Up_**
-```bash
+```console
 $ docker rm ncats-webd
 ```
 
@@ -40,13 +40,13 @@ $ docker rm ncats-webd
 Use Jenkins to build the image. To deploy, see below.
 
 **_Deploy to Staging_**
-```bash
+```console
 c4b1 $ docker service update --image dhub.ncats.dhs.gov:5001/ncats-webd:staging
 ```
 
 ### Build for Production
 **_Deploy to Production_**
-```bash
+```console
 # Local Machine
 
 localhost $ hg tags
@@ -59,7 +59,7 @@ localhost $ hg tag 2.0.9
 localhost $ hg push
 ```
 
-```bash
+```console
 # Staging Swarm Manager
 
 c4b1 $ docker pull dhub.ncats.dhs.gov:5001/ncats-webd:staging
@@ -68,7 +68,7 @@ c4b1 $ docker tag dhub.ncats.dhs.gov:5001/ncats-webd:staging dhub.ncats.dhs.gov:
 c4b1 $ docker push dhub.ncats.dhs.gov:5001/ncats-webd
 ```
 
-```bash
+```console
 # Production Swarm Manager
 
 c2b2 $ docker pull dhub.ncats.dhs.gov:5001/ncats-webd:stable
