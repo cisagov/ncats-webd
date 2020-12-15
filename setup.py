@@ -20,7 +20,7 @@ setup(
         "flask >= 0.10.1",
         "Flask-Caching >= 1.4.0, < 1.8.0",
         "Flask-Cors >= 2.1.0",
-        "Flask-SocketIO >= 2.1",
+        "Flask-SocketIO >= 2.1, < 5",
         "Flask-Uploads >= 0.2.0",
         "gevent >= 1.2.0",
         "gevent-websocket >= 0.9.5",
