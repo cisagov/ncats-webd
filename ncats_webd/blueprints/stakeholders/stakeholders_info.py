@@ -40,6 +40,7 @@ def get_first_snapshot_times(db, owners):
                 },
                 {"$sort": {"_id": 1}},
             ],
+            allowDiskUse=True,
             cursor={},
         )
     )
