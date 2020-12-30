@@ -30,6 +30,7 @@ setup(
         "numpy >= 1.7.1",
         "pandas == 0.19.2",
         "python-dateutil >= 2.2",
+        "python-engineio >= 3, < 3.14",
         "schedule >= 0.3.2",
     ],
 )
