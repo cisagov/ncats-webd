@@ -111,7 +111,7 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install --upgrade --requirement requirements.txt
       - name: Build artifacts
-        run: python3 setup.py sdist bdist_wheel
+        run: python setup.py sdist bdist_wheel
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
