@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Generate data for end of fiscal year CyHy reporting.
 
 Usage:
@@ -1741,7 +1739,3 @@ def main(argv=None):
 
     # import IPython; IPython.embed() #<<< BREAKPOINT >>>
     # sys.exit(0)
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])

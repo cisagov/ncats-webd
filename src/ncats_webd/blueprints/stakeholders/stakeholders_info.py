@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Outputs CSV data for all CyHy stakeholders.
 
 Usage:
@@ -202,7 +201,3 @@ def main():
     stakeholders = write_stakeholders(db)
     # for i in stakeholders:
     #     print i
-
-
-if __name__ == "__main__":
-    main()

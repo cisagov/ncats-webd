@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Report on metrics requested by Congress (see OPS-1600 for details)
 
 Usage:
@@ -472,7 +470,3 @@ def main():
     args = docopt(__doc__, version="v0.0.1")
     db = database.db_from_config(args["--section"])
     congressional_data(db, args["START_DATE"], args["END_DATE"])
-
-
-if __name__ == "__main__":
-    main()

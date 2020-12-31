@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Export a CSV containing all points of contact
 
 Usage:
@@ -61,7 +60,3 @@ def main():
     db = database.db_from_config(args["--section"])
     # import IPython; IPython.embed() #<<< BREAKPOINT >>>
     print write_contacts_csv(db).getvalue()
-
-
-if __name__ == "__main__":
-    main()

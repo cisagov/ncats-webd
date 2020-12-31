@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Generate list of CyHy customers by risk rating.
 
 Usage:
@@ -269,7 +268,3 @@ def main():
     args = docopt(__doc__, version="v0.0.1")
     db = database.db_from_config(args["--section"])
     get_ranking_lists(db)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 FEMA Region Details.
 
@@ -258,7 +257,3 @@ def main():
     db = database.db_from_config(args["--section"])
 
     print fema_csv(db).getvalue()
-
-
-if __name__ == "__main__":
-    main()

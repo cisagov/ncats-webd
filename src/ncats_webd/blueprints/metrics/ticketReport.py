@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 usage: ticket-report.py [-h] [--section config-section]
 
@@ -679,7 +678,3 @@ def main():
         rd["prev_week_start"],
         rd["prev_week_end"],
     )
-
-
-if __name__ == "__main__":
-    main()

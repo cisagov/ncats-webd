@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """NCATS web data server.
 
 Usage:
@@ -54,7 +53,3 @@ def main():
         print("Launching %s" % command)
     server_pid = subprocess.Popen(args=shlex.split(command))
     server_pid.wait()
-
-
-if __name__ == "__main__":
-    main()
