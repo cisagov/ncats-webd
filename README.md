@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/ncats-webd/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/ncats-webd?branch=develop)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/context:python)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/context:javascript)
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/ncats-webd/develop/badge.svg)](https://snyk.io/test/github/cisagov/ncats-webd)
 
 ## Getting Started ##
