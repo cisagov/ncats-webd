@@ -111,6 +111,7 @@ setup(
             # 1.11.1 fixed this issue, but to ensure expected behavior we'll pin
             # to never grab the regression version.
             "coveralls != 1.11.0",
+            "mock == 3.0.5",
             "pre-commit",
             "pytest-cov",
             "pytest",

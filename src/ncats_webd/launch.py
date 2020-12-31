@@ -17,6 +17,8 @@ Options:
 """
 from gevent import monkey
 
+from ._version import __version__
+
 monkey.patch_all()
 async_mode = "gevent"
 
@@ -26,7 +28,7 @@ import os, shlex, subprocess
 
 def main():
     global __doc__
-    args = docopt(__doc__, version="v0.0.2")
+    args = docopt(__doc__, version=__version__)
 
     command = "gunicorn --bind '[::]:5000' --log-level=debug --timeout=90 -k {!s} --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 \"".format(
         async_mode
