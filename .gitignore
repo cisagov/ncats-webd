@@ -1,7 +1,6 @@
-.DS_Store
-**.pyc
-._*
+__pycache__
+.coverage
+.mypy_cache
+.pytest_cache
+.python-version
 *.egg-info
-web/instance/secret_key
-web/var/flasky-instance/secret_key
-.ipynb_checkpoints

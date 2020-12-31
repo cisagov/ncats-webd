@@ -1,4 +1,10 @@
-# NCATS-WebD(aemon)
+# NCATS-WebD(aemon) #
+
+[![GitHub Build Status](https://github.com/cisagov/ncats-webd/workflows/build/badge.svg)](https://github.com/cisagov/ncats-webd/actions)
+[![Coverage Status](https://coveralls.io/repos/github/cisagov/ncats-webd/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/ncats-webd?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/ncats-webd/develop/badge.svg)](https://snyk.io/test/github/cisagov/ncats-webd)
 
 ## Getting Started
 ```console
@@ -7,7 +13,7 @@ $ cd ncats-webd
 $ docker build -t ncats-webd .
 ```
 
-## Developing and Testing with Docker
+## Developing and Testing with Docker ##
 The fastest way to get started developing and testing will be to use docker. The following will start a development server and expose it at http://localhost:5000.
 
 **_Starting Development Server_**
@@ -36,7 +42,7 @@ If you are finished with the project, you can clean up all images with the follo
 $ docker rm ncats-webd
 ```
 
-### Build for Staging
+### Build for Staging ###
 Use Jenkins to build the image. To deploy, see below.
 
 **_Deploy to Staging_**
@@ -44,7 +50,7 @@ Use Jenkins to build the image. To deploy, see below.
 c4b1 $ docker service update --image dhub.ncats.dhs.gov:5001/ncats-webd:staging
 ```
 
-### Build for Production
+### Build for Production ###
 **_Deploy to Production_**
 ```console
 # Local Machine
@@ -86,3 +92,21 @@ q2j1gemuruyl  web-stack_proxy.1          nginx:1-alpine                         
 
 c2b2 $ docker service update --image dhub.ncats.dhs.gov:5001/ncats-webd:stable web-stack_api
 ```
+
+## Contributing ##
+
+We welcome contributions!  Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for
+details.
+
+## License ##
+
+This project is in the worldwide [public domain](LICENSE).
+
+This project is in the public domain within the United States, and
+copyright and related rights in the work worldwide are waived through
+the [CC0 1.0 Universal public domain
+dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+
+All contributions to this project will be released under the CC0
+dedication. By submitting a pull request, you are agreeing to comply
+with this waiver of copyright interest.
