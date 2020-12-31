@@ -6,52 +6,65 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/ncats-webd.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/ncats-webd/context:python)
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/ncats-webd/develop/badge.svg)](https://snyk.io/test/github/cisagov/ncats-webd)
 
-## Getting Started
+## Getting Started ##
+
 ```console
-$ git clone git@github.com:jsf9k/ncats-webd.git
-$ cd ncats-webd
-$ docker build -t ncats-webd .
+git clone git@github.com:jsf9k/ncats-webd.git
+cd ncats-webd
+docker build -t ncats-webd .
 ```
 
 ## Developing and Testing with Docker ##
-The fastest way to get started developing and testing will be to use docker. The following will start a development server and expose it at http://localhost:5000.
+
+The fastest way to get started developing and testing will be to use docker. The
+following will start a development server and expose it at
+`http://localhost:5000`.
 
 **_Starting Development Server_**
+
 ```console
-$ docker run -d --name ncats-webd -v /private/etc/cyhy:/etc/cyhy -v $(pwd)/ncats_webd:/usr/src/ncats-webd/ncats_webd -p 5000:5000 ncats-webd -dls <db-section>
+docker run -d --name ncats-webd -v /private/etc/cyhy:/etc/cyhy -v $(pwd)/ncats_webd:/usr/src/ncats-webd/ncats_webd -p 5000:5000 ncats-webd -dls <db-section>
 ```
 
 When changes have been made to your code, you'll need to restart the server.
 
 **_Restarting Development Server_**
+
 ```console
-$ docker restart ncats-webd
+docker restart ncats-webd
 ```
 
 When you are finished developing stop the development server.
 
 **_Stopping Development Server_**
+
 ```console
-$ docker stop ncats-webd
+docker stop ncats-webd
 ```
 
-If you are finished with the project, you can clean up all images with the following:
+If you are finished with the project, you can clean up all images with the
+following:
 
 **_Cleaning Up_**
+
 ```console
-$ docker rm ncats-webd
+docker rm ncats-webd
 ```
 
 ### Build for Staging ###
+
 Use Jenkins to build the image. To deploy, see below.
 
 **_Deploy to Staging_**
+
 ```console
 c4b1 $ docker service update --image dhub.ncats.dhs.gov:5001/ncats-webd:staging
 ```
 
 ### Build for Production ###
+
 **_Deploy to Production_**
+
 ```console
 # Local Machine
 
