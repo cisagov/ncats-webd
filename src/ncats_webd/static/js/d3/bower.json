@@ -1,10 +1,4 @@
 {
-  "name": "d3",
-  "version": "3.3.3",
-  "main": "d3.js",
-  "scripts": [
-    "d3.js"
-  ],
   "ignore": [
     ".DS_Store",
     ".git",
@@ -21,5 +15,11 @@
     "package.json",
     "src",
     "test"
-  ]
+  ],
+  "main": "d3.js",
+  "name": "d3",
+  "scripts": [
+    "d3.js"
+  ],
+  "version": "3.3.3"
 }

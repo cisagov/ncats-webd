@@ -13,7 +13,7 @@
         console.log('new queue data');
         update_all_charts(JSON.parse(msg.data));
     })
-    
+
     function make_chart(chart_id, colors) {
         var color_ramp = d3.scale.linear().domain([-16,0]).range(colors);
         var chart = c3.generate({
@@ -103,5 +103,5 @@
     }
 
     //initial load
-    //d3.json("?j").get(function(error, data) { update_all_charts(data, false)}); 
+    //d3.json("?j").get(function(error, data) { update_all_charts(data, false)});
 </script>

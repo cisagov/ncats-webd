@@ -43,7 +43,7 @@
 	    .scale(2000)
 	    .translate([width / 2, height / 2])
 	    .precision(.1);
-    
+
 	var scan_source = projection([-77, 39]);
 
 	var path = d3.geo.path()
@@ -66,14 +66,14 @@
 	        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
 	        .attr("class", "states")
 	        .attr("d", path);
-    
+
 	    d3.json("?j", update_hexes)
 		setInterval(
 			function()
 			{
 	            d3.json("?j", update_hexes);
 			}, 5000
-		);    
+		);
 	}
 
 	function update_hexes(error, hosts) {
@@ -81,7 +81,7 @@
 	  hosts.forEach(function(d) {
 	    var p = projection(d.loc);
 	    if (p != null)
-	    { 
+	    {
 	        projected_hosts.push({0:p[0],1:p[1],"stage":d.stage})
 	    }
 	  });
@@ -102,14 +102,14 @@
 	  enters = node.enter().append("g")
 	      .attr("class", "hexagons")
 	      .attr("transform", "translate("+scan_source+")")
-        
+
 	  enters.append("path")
 	      .attr("d", function(d) { return hexbin.hexagon(); })
 	      .style("fill-opacity", 0)
 	      .transition()
 	        .duration(750)
 	        .style("fill-opacity", 1)
-        
+
 	  enters.append("text")
 	      .attr("text-anchor", "middle")
 	      .attr("dy", ".35em")
@@ -117,8 +117,8 @@
 	  enters.transition()
 	      .duration(750)
 	      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
- 
- 
+
+
 	  // ENTER + UPDATE
 	  // Appending to the enter selection expands the update selection to include
 	  // entering elements; so, operations on the update selection after appending to
@@ -127,15 +127,15 @@
 	  // set text and color of hex
 	  node.select("path")
 	    .style("fill", function(d) { return color(d[0].stage) }); //TODO use best color, not first
-    
+
 	  node.select("text")
 	    .text(function(d) { return d.length; })
-	    .style("font-size", function(d) { 
+	    .style("font-size", function(d) {
 	        if (d.length < 100) return 20;
 	        if (d.length < 1000) return 16;
 	        return 14;
 	    })
-          
+
 	  // EXIT
 	  // Remove old elements as needed.
 	  node.exit()
@@ -144,13 +144,13 @@
 	      .style("opacity", 0)
 	      .attr("transform", "translate("+scan_source+")")
 	    .remove();
-  
+
 	}
-    
+
     if ($.cookie('cycle_pages') == 'true') {
         cycle_delay = $.cookie('cycle_delay') || 300;
         setTimeout(function(){window.location.href='/dashboard'}, cycle_delay * 1000)
     }
-    
+
 	</script>
 {% endblock %}

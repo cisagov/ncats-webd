@@ -42,15 +42,15 @@
     </form>
     <script src="/static/js/vendor/jquery.js"></script>
     <script src="/static/js/jquery.cookie.js"></script>
-    <script>                
+    <script>
         function toggleCookie(element){
             $.cookie(element.id, element.checked, {path:'/'});
         }
-        
+
         function saveInput(element){
             $.cookie(element.id, element.value, {path:'/'});
         }
-        
+
         $('#censor_names')[0].checked = $.cookie('censor_names') == 'true';
         $('#cycle_pages')[0].checked = $.cookie('cycle_pages') == 'true';
         $('#cycle_delay')[0].value = $.cookie('cycle_delay') || 300;

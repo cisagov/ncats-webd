@@ -2,20 +2,20 @@ body {
 background-color:white;
 text-align: center;
 }
-		
+
 td
 {
 text-align:left;
 padding:8px
 }
-		
+
 
 table
-{ 
+{
 	margin-left: auto;
 	margin-right: auto;
 }
-		
+
 .pretty-table {
 	border: 1px solid #DFDFDF;
 	background-color: #F9F9F9;

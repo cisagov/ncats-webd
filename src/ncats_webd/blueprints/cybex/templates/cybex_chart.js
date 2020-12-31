@@ -1,5 +1,5 @@
 <script type="text/javascript"  charset="utf-8">
-    
+
     socket.on('connect', function() {
         console.log('connected (cybex)');
         socket.emit('join', {'room':'cybex'});
@@ -14,11 +14,11 @@
         cybex_chart4.load({json:JSON.parse(msg.cybex_chart4)});
 		console.log(msg);
     })
-    
+
     if (typeof is_printable_chart === 'undefined') {
         var is_printable_chart = false;
     }
-    
+
     var cybex_chart1 = c3.generate({
         bindto: '#cybex_chart1',
         data: {
@@ -61,7 +61,7 @@
                     position: 'outer-middle'
                 },
                 // min: 0,
-				// max: 1400, 
+				// max: 1400,
                 padding: {
                     bottom: 0
                 }
@@ -88,7 +88,7 @@
             }
         }
     });
-    
+
     var cybex_chart2 = c3.generate({
         bindto: '#cybex_chart2',
         data: {
@@ -179,7 +179,7 @@
             }
         }
     });
-	
+
     var cybex_chart3 = c3.generate({
         bindto: '#cybex_chart3',
         data: {
@@ -249,7 +249,7 @@
             }
         }
     });
-    
+
     var cybex_chart4 = c3.generate({
         bindto: '#cybex_chart4',
         data: {

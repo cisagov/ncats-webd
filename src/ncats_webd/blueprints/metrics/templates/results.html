@@ -6,19 +6,19 @@
 {% block body %}
     <div class="row">
         <div class="large-12 columns">
-			<h1>Metrics Results</h1>  
+			<h1>Metrics Results</h1>
         </div>
     </div>
 	<div class="row">
 		<div class="large-12 columns">
     For the Dates {{START}} to {{END}}:
-	
+
 	<p>
 	{% if VULN_TICKET %}
 	  {{ VULN_TICKET.severity_level }} Vulnerability Tickets<br>
 	  =====================
       <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened before {{START}} and still open now: {{ VULN_TICKET.opened_before_and_still_open }}
-      <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened before {{START}} and closed by {{END}}: {{ VULN_TICKET.opened_before_and_closed_during }} 
+      <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened before {{START}} and closed by {{END}}: {{ VULN_TICKET.opened_before_and_closed_during }}
       <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened between {{START}} and {{END}}, and still open now: {{ VULN_TICKET.opened_during_and_still_open }}
       <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened after {{START}} and closed by {{END}}: {{ VULN_TICKET.opened_during_and_closed_during }}
       <br>{{ VULN_TICKET.severity_level }} Vulnerability tickets opened between {{START}} and {{END}}, and closed after {{END}}: {{ VULN_TICKET.opened_during_and_closed_after }}
@@ -28,55 +28,55 @@
 	  <br><br>{{ VULN_TICKET.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if TOP_VULNS %}
 	  Top 10 {{ TOP_VULNS.level }} Ticketed Vulnerabilities<br>
 	  {{ TOP_VULNS.level }} Vulnerability Tickets Opened: {{ TOP_VULNS.total }}<br>
 	  =====================
 	  {% for i in TOP_VULNS.data %}
-	      <br>{{ i.vuln }}: {{ i.count }} ({{ i.pct }}%) 
+	      <br>{{ i.vuln }}: {{ i.count }} ({{ i.pct }}%)
 	  {% endfor %}
 	  <br><br>{{ TOP_VULNS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if TOP_OS %}
 	  Top 10 Operating System Fingerprints<br>
 	  Total Fingerprinted Hosts: {{ TOP_OS.total }}<br>
 	  =====================
 	  {% for i in TOP_OS.data %}
-	      <br>{{ i.OS }}: {{ i.count }} ({{ i.pct }}%) 
+	      <br>{{ i.OS }}: {{ i.count }} ({{ i.pct }}%)
 	  {% endfor %}
 	  <br><br>{{ TOP_OS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if TOPVULNSERV %}
 	  Top 10 Vulnerable Services<br>
 	  Total Vulnerable Services: {{ TOPVULNSERV.total }}<br>
 	  =====================
 	  {% for i in TOPVULNSERV.data %}
-	      <br>{{ i.service }}: {{ i.count }} ({{ i.pct }}%) 
+	      <br>{{ i.service }}: {{ i.count }} ({{ i.pct }}%)
 	  {% endfor %}
 	  <br><br>{{ TOPVULNSERV.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if TOPSERV %}
 	  Top 10 Services<br>
 	  Total Services: {{ TOPSERV.total }}<br>
 	  =====================
 	  {% for i in TOPSERV.data %}
-	      <br>{{ i.service }}: {{ i.count }} ({{ i.pct }}%) 
+	      <br>{{ i.service }}: {{ i.count }} ({{ i.pct }}%)
 	  {% endfor %}
 	  <br><br>{{ TOPSERV.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if NUMORGS %}
       Total stakeholder organizations scanned: {{ NUMORGS.total_orgs }}<br>
@@ -87,7 +87,7 @@
 	  <br><br>{{ NUMORGS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if NUMADDRHOSTS %}
       Total addresses scanned: {{ NUMADDRHOSTS.total_addr }}<br>
@@ -112,7 +112,7 @@
 	  <br><br>{{ NUMADDRHOSTS.description4 }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if NUMREPORTS %}
       Total CyHy reports generated: {{ NUMREPORTS.total_reports }}<br>
@@ -123,7 +123,7 @@
 	  <br><br>{{ NUMREPORTS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if AVGCVSS %}
       Average CVSS score for hosts with vulnerabilities: {{ AVGCVSS.overall_cvss }}<br>
@@ -134,7 +134,7 @@
 	  <br><br>{{ AVGCVSS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if UVULNS %}
 	  {% for i in UVULNS.data %}
@@ -148,7 +148,7 @@
 	  <br><br>{{ UVULNS.description }}
 	{% endif %}
     </p>
-	
+
 	<p>
 	{% if NVULNDET %}
 	  {% for i in NVULNDET.data %}
@@ -163,5 +163,5 @@
 	{% endif %}
     </p>
 		</div>
-	</div>	
+	</div>
 {% endblock %}

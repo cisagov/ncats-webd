@@ -28,7 +28,7 @@ function update_ticket_log(tickets) {
     //ENTER
     var li = lis.enter()
         .append('li').append('div').attr('class','row')
-    
+
     li.append('div')
         .attr('class', 'small-2 columns')
             .append('i')
@@ -47,7 +47,7 @@ function update_ticket_log(tickets) {
             .text(function(d){return d.details.name;})
     //EXIT
     //lis.exit().remove();
-    
+
     //trim items from top of log
     lis = d3.select('#ticket_log').selectAll('li');
     var overage = lis[0].length - MAX_TICKET_LIST_SIZE;

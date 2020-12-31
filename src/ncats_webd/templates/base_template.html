@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-    
+
     <title>Cyber Hygiene | {% block title %}{% endblock %}</title>
-    
+
     <link rel="stylesheet" href="/static/css/app.css" />
     <link rel="stylesheet" href="/static/css/foundation.css" />
     <link rel="stylesheet" href="/static/fonts/foundation-icons/foundation-icons.css" />
@@ -100,14 +100,14 @@
           </section>
         </nav>
     </div>
-    
+
     <div id="access_modal" data-options="close_on_background_click:false" class="reveal-modal dark-text" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
       <h2 id="modalTitle">Authorized Access Only</h2>
       <ul class="medium-block-grid-3"><li/><li><img src="/static/img/dhs_logo_tp.svg"/></li></ul>
       <p class="text-justify">You are about to access a Department of Homeland Security computer system. This computer system and data therein are property of the U.S. Government and provided for official U.S. Government information and use. There is no expectation of privacy when you use this computer system. The use of a password or any other security measure does not establish an expectation of privacy. By using this system, you consent to the terms set forth in this notice. You may not process classified national security information on this computer system. Access to this system is restricted to authorized users only. Unauthorized access, use, or modification of this system or of data contained herein, or in transit to/from this system, may constitute a violation of section 1030 of title 18 of the U.S. Code and other criminal laws. Anyone who accesses a federal computer system without authorization or exceeds access authority, or obtains, alters, damages, destroys, or discloses information, or prevents authorized use of information on the computer system, may be subject to penalties, fines or imprisonment. This computer system and any related equipment is subject to monitoring for administrative oversight, law enforcement, criminal investigative purposes, inquiries into alleged wrongdoing or misuse, and to ensure proper performance of applicable security features and procedures. DHS may conduct monitoring activities without further notice.</p>
     <p><a href="#" data-reveal-id="access_modal" class="secondary button right" onclick="yup()">Yup</a>
     </div>
-    
+
     <div id="disconnect_modal" class="reveal-modal critical dark-text" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
       <h2 id="modalTitle">Server Disconnected</h2>
       <h6 class="subheader" id='disconnect_date'></h6>
@@ -127,19 +127,19 @@
         if ($.cookie('censor_names') == 'true') {
             $('head:last').append('<link rel="stylesheet" type="text/css" href="/static/css/censor.css" />');
         }
-        
+
         function disconnected(){
             document.getElementById("disconnect_date").textContent = new Date();
             $('#disconnect_modal').foundation('reveal', 'open');
         }
-        
+
         function reconnected(){
             var modal = $('#disconnect_modal')
             if (modal.hasClass('open')) {
                 modal.foundation('reveal', 'close');
             }
         }
-        
+
         socket.on('connect', function() {
             console.log('connected');
             reconnected();
@@ -149,19 +149,19 @@
             console.log('disconnected');
             disconnected();
         });
-        
+
         socket.on('reconnecting', function(next_delay) {
             console.log('next reconnect attempt in ' + next_delay + 'ms');
         });
-        
+
         if (!$.cookie('saw_warning')) {
             $('#access_modal').foundation('reveal', 'open');
         }
-        
+
         function yup(){
             $.cookie('saw_warning', true, {expires:1, path:'/'});
         }
-        
+
         if (screenfull.enabled) {
             $('#fullscreen')[0].addEventListener('click', function () { screenfull.toggle(); });
         } else {

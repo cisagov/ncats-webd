@@ -1,5 +1,5 @@
 <script type="text/javascript"  charset="utf-8">
-    
+
     socket.on('connect', function() {
         console.log('connected (bod)');
         socket.emit('join', {'room':'bod'});
@@ -11,11 +11,11 @@
         bod_chart1.load({json:JSON.parse(msg.bod_chart1)});
         bod_chart2.load({json:JSON.parse(msg.bod_chart2)});
     })
-    
+
     if (typeof is_printable_chart === 'undefined') {
         var is_printable_chart = false;
     }
-    
+
     var bod_chart1 = c3.generate({
         bindto: '#bod_chart1',
         data: {
@@ -95,7 +95,7 @@
             }
         }
     });
-    
+
     var bod_chart2 = c3.generate({
         bindto: '#bod_chart2',
         data: {

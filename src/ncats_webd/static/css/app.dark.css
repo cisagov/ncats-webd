@@ -14,11 +14,11 @@ h1, h2, h3, h4, h5 {
 .c3-chart-arcs-title {
   fill: #0f0;
   dominant-baseline: middle;
-  font-size: 3.7em; 
+  font-size: 3.7em;
 }
 
 .c3-chart-arc path {
-  stroke: #000 !important; 
+  stroke: #000 !important;
 }
 
 .c3-chart-arc text {
@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5 {
 
 .c3 path, .c3 line {
   fill: none;
-  stroke: #ccc; 
+  stroke: #ccc;
 }
 
 .c3-region rect {

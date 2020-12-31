@@ -55,11 +55,11 @@
           var el = this;
           var keyCode = e.keyCode || e.which;
             // if user pressed tab key
-            if (keyCode == 9) { 
+            if (keyCode == 9) {
               e.preventDefault();
               // TODO: Change usual_tab_behavior into accessibility function?
               usual_tab_behavior(e, el);
-            } 
+            }
         })
         // Click event: tab title
         .on('click.fndtn.tab', '[' + this.attr_name() + '] > * > a', function(e) {

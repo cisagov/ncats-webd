@@ -144,19 +144,19 @@
         console.log('new queue data', data);
         update_all_charts(data);
     })
-    
+
     socket.on('new_hire_metrics', function(msg) {
         data = JSON.parse(msg.data)
         console.log('new hire data', data);
         update_overall_metrics(data);
     })
-    
+
     socket.on('ticket_severity_counts', function(msg) {
         data = JSON.parse(msg.data)
         console.log('new ticket severity counts data', data);
         update_stakeholders(data);
     })
-    
+
     function tween_it(element, new_datum, in_tween_duration) {
         var calced_tween_duration = (typeof in_tween_duration === 'undefined') ? 5000 : in_tween_duration;
         var previous_datum = element.datum();
@@ -171,7 +171,7 @@
             };
         });
     }
-    
+
     function update_chart(chart_text, column_data) {
         var svg_text = d3.select(chart_text);
         tween_it(svg_text, column_data);
@@ -187,12 +187,12 @@
         update_chart('#vs_waiting', json_data.vs_waiting);
         update_chart('#vs_running', json_data.vs_running);
     }
-    
+
     function update_single_overall_metric(new_datum, selector) {
         var text_element = d3.select(selector);
         tween_it(text_element, new_datum);
     }
-        
+
     function update_overall_metrics(json_data) {
         update_single_overall_metric(json_data.stakeholders, '#stakeholders');
         update_single_overall_metric(json_data.addresses, '#addresses');
@@ -205,7 +205,7 @@
         update_single_overall_metric(json_data.open_tickets.low, '#vulns_low');
         update_single_overall_metric(json_data.reports, '#reports');
     }
-        
+
     function update_stakeholders(stakeholder_data) {
         console.log(stakeholder_data);
 
@@ -215,45 +215,45 @@
           node.appendChild(textnode);                              // Append the text to <li>
           document.getElementById("grid-container").appendChild(node);
         }
-        
+
         //binding on org_name
         var top_div = d3.select('#stakeholder_column').selectAll('div.row')
             .data(stakeholder_data.slice(0,10), function(d) {return d.org_name});
-        
+
         //entering
         var enters_row = top_div.enter()
             .append('div').classed('row status', true);
-    
+
         var enters_name = enters_row
             .append('div')
                 .classed('small-10 columns censored', true)
                 .text(function(d){return d.org_name.toUpperCase()});
-        
+
         var enters_critical = enters_row
             .append('div')
                 .classed('small-1 columns vuln-critical', true)
                 .text(function(d){return d.critical_open});
-        
+
         var enters_high = enters_row
             .append('div')
                 .classed('small-1 columns vuln-high', true)
                 .text(function(d){return d.high_open});
-        
+
         //updating
         var crits = top_div.select('div.vuln-critical')
                 .text(function(d){return d.critical_open});
 
         var highs = top_div.select('div.vuln-high')
                 .text(function(d){return d.high_open});
-                
+
         //exiting
         top_div.exit().remove();
     }
-    
+
     if ($.cookie('cycle_pages') == 'true') {
         cycle_delay = $.cookie('cycle_delay') || 300;
         setTimeout(function(){window.location.href='/maps/running'}, cycle_delay * 1000)
     }
-    
+
 </script>
 {% endblock %}

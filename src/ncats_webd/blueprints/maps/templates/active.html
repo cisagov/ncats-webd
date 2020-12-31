@@ -61,7 +61,7 @@
         .projection(projection);
 
     var svg = d3.select("#map");
-        
+
     function change_view_mode(severity){
         update_filter(severity);
         switch(severity)
@@ -86,7 +86,7 @@
                 break;
         }
     }
-    
+
     function update_filter(severity) {
         // fetch new data
         d3.json("?j&level=" + severity, update_hexes);
@@ -113,14 +113,14 @@
             .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
             .attr("class", "states")
             .attr("d", path);
-    
+
         change_view_mode(-1);
         setInterval(
             function()
             {
                 next_update();
             }, 15000
-        );    
+        );
     }
 
     function next_update(){
@@ -135,7 +135,7 @@
       tickets.forEach(function(d) {
         var p = projection(d.loc);
         if (p != null)
-        { 
+        {
             projected_tickets.push({0:p[0],1:p[1],"severity":d.details.severity})
         }
       });
@@ -156,14 +156,14 @@
       enters = node.enter().append("g")
           .attr("class", "hexagons")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        
+
       enters.append("path")
           .attr("d", function(d) { return hexbin.hexagon(); })
           .style("fill-opacity", 0)
           .transition()
             .duration(750)
             .style("fill-opacity", 1)
-        
+
       enters.append("text")
           .attr("text-anchor", "middle")
           .attr("dy", ".35em")
@@ -176,15 +176,15 @@
       // set text and color of hex
       node.select("path")
         .style("fill", function(d) { return color(d3.median(d, function(d) { return +d.severity; })); })
-    
+
       node.select("text")
         .text(function(d) { return d.length; })
-        .style("font-size", function(d) { 
+        .style("font-size", function(d) {
             if (d.length < 100) return 20;
             if (d.length < 1000) return 16;
             return 14;
         })
-      
+
       // EXIT
       // Remove old elements as needed.
       node.exit()
@@ -192,7 +192,7 @@
           .duration(750)
           .style("opacity", 0)
         .remove();
-  
+
     }
 
     </script>
