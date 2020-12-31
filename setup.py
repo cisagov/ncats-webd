@@ -11,6 +11,8 @@ Based on:
 # Standard Python Libraries
 import codecs
 from glob import glob
+# This is required to get the encoding kwarg for the readme() function
+from io import open as io_open
 from os.path import abspath, basename, dirname, join, splitext
 
 # Third-Party Libraries
@@ -19,7 +21,7 @@ from setuptools import find_packages, setup
 
 def readme():
     """Read in and return the contents of the project's README.md file."""
-    with open("README.md", encoding="utf-8") as f:
+    with io_open("README.md", encoding="utf-8") as f:
         return f.read()
 
 
