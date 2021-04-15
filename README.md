@@ -2,7 +2,7 @@
 
 ## Getting Started
 ```console
-$ git clone git@github.com:jsf9k/ncats-webd.git
+$ git clone git@github.com:cisagov/ncats-webd.git
 $ cd ncats-webd
 $ docker build -t ncats-webd .
 ```
