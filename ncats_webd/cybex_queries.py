@@ -192,9 +192,16 @@ def csv_get_open_tickets(db, ticket_severity):
             "days_since_first_detected"
         ].round(decimals=1)
         results_df["days_since_first_reported"] = results_df[
-            "days_since_first_reported"
-        ].round(decimals=1)
-        results_df["days_to_report"] = results_df["days_to_report"].round(decimals=1)
+            "days_since_first_reported"].apply(
+                lambda x: round(x, 1)
+                if type(x) == float
+                else None
+            )
+        results_df["days_to_report"] = results_df["days_to_report"].apply(
+                lambda x: round(x, 1)
+                if type(x) == float
+                else None
+        )
         response = results_df.to_csv(
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
