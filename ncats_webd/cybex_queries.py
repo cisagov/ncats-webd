@@ -18,25 +18,51 @@ def get_open_tickets_dataframe(db, ticket_severity):
     )  # Cache generated_time of first report for each ticket
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
-    tix = db.TicketDoc.find(
-        {
-            "source": "nessus",
-            "details.severity": ticket_severity,
-            "false_positive": False,
-            "owner": {"$in": fed_executive_owners},
-            "open": True,
-        },
-        {
-            "_id": False,
-            "owner": True,
-            "time_opened": True,
-            "ip": True,
-            "port": True,
-            "details.name": True,
-            "details.cve": True,
-            "snapshots": True,
-        },
-    )
+
+    TICKET_PROJECTION = {
+        "_id": False,
+        "details.cve": True,
+        "details.kev": True,
+        "details.name": True,
+        "details.severity": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "snapshots": True,
+        "time_opened": True
+    }
+
+    if ticket_severity == "urgent":
+        # "urgent" tickets meet at least one of the following criteria:
+        #   KEV (Known Exploited Vulnerability) = true
+        #   Critical (severity = 4)
+        #   High (severity = 3)
+        tix = db.TicketDoc.find(
+            {
+                "source": "nessus",
+                "$or":
+                    [
+                        {"details.kev": True},
+                        {"details.severity": {"$gte": 3}}
+                    ],
+                "false_positive": False,
+                "owner": {"$in": fed_executive_owners},
+                "open": True,
+            },
+            TICKET_PROJECTION
+        )
+    else:
+        # Treat ticket_severity normally
+        tix = db.TicketDoc.find(
+            {
+                "source": "nessus",
+                "details.severity": ticket_severity,
+                "false_positive": False,
+                "owner": {"$in": fed_executive_owners},
+                "open": True,
+            },
+            TICKET_PROJECTION
+        )
 
     tix = list(tix)
     for x in tix:
@@ -85,25 +111,51 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     )
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
-    tix = db.TicketDoc.find(
-        {
-            "source": "nessus",
-            "time_closed": {"$gte": closed_since_date},
-            "details.severity": ticket_severity,
-            "owner": {"$in": fed_executive_owners},
-            "open": False,
-        },
-        {
+
+    TICKET_PROJECTION = {
             "_id": False,
-            "owner": True,
-            "time_opened": True,
-            "time_closed": True,
-            "ip": True,
-            "port": True,
-            "details.name": True,
             "details.cve": True,
-        },
-    )
+            "details.kev": True,
+            "details.name": True,
+            "details.severity": True,
+            "ip": True,
+            "owner": True,
+            "port": True,
+            "time_closed": True,
+            "time_opened": True,
+        }
+
+    if ticket_severity == "urgent":
+        # "urgent" tickets meet at least one of the following criteria:
+        #   KEV (Known Exploited Vulnerability) = true
+        #   Critical (severity = 4)
+        #   High (severity = 3)
+        tix = db.TicketDoc.find(
+            {
+                "source": "nessus",
+                "time_closed": {"$gte": closed_since_date},
+                "$or":
+                    [
+                        {"details.kev": True},
+                        {"details.severity": {"$gte": 3}}
+                    ],
+                "owner": {"$in": fed_executive_owners},
+                "open": False,
+            },
+            TICKET_PROJECTION
+        )
+    else:
+        # Treat ticket_severity normally
+        tix = db.TicketDoc.find(
+            {
+                "source": "nessus",
+                "time_closed": {"$gte": closed_since_date},
+                "details.severity": ticket_severity,
+                "owner": {"$in": fed_executive_owners},
+                "open": False,
+            },
+            TICKET_PROJECTION
+        )
 
     tix = list(tix)
     for x in tix:
