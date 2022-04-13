@@ -140,11 +140,11 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         # Treat ticket_severity normally
         tix = db.TicketDoc.find(
             {
+                "details.severity": ticket_severity,
+                "open": False,
+                "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
-                "details.severity": ticket_severity,
-                "owner": {"$in": fed_executive_owners},
-                "open": False,
             },
             TICKET_PROJECTION,
         )
