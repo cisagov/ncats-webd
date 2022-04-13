@@ -39,11 +39,11 @@ def get_open_tickets_dataframe(db, ticket_severity):
         #   High (severity = 3)
         tix = db.TicketDoc.find(
             {
-                "source": "nessus",
                 "$or": [{"details.kev": True}, {"details.severity": {"$gte": 3}}],
                 "false_positive": False,
-                "owner": {"$in": fed_executive_owners},
                 "open": True,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nessus",
             },
             TICKET_PROJECTION,
         )
@@ -51,11 +51,11 @@ def get_open_tickets_dataframe(db, ticket_severity):
         # Treat ticket_severity normally
         tix = db.TicketDoc.find(
             {
-                "source": "nessus",
                 "details.severity": ticket_severity,
                 "false_positive": False,
-                "owner": {"$in": fed_executive_owners},
                 "open": True,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nessus",
             },
             TICKET_PROJECTION,
         )
@@ -128,11 +128,11 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         #   High (severity = 3)
         tix = db.TicketDoc.find(
             {
+                "$or": [{"details.kev": True}, {"details.severity": {"$gte": 3}}],
+                "open": False,
+                "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
-                "$or": [{"details.kev": True}, {"details.severity": {"$gte": 3}}],
-                "owner": {"$in": fed_executive_owners},
-                "open": False,
             },
             TICKET_PROJECTION,
         )
