@@ -29,7 +29,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
         "owner": True,
         "port": True,
         "snapshots": True,
-        "time_opened": True
+        "time_opened": True,
     }
 
     if ticket_severity == "urgent":
@@ -40,16 +40,12 @@ def get_open_tickets_dataframe(db, ticket_severity):
         tix = db.TicketDoc.find(
             {
                 "source": "nessus",
-                "$or":
-                    [
-                        {"details.kev": True},
-                        {"details.severity": {"$gte": 3}}
-                    ],
+                "$or": [{"details.kev": True}, {"details.severity": {"$gte": 3}}],
                 "false_positive": False,
                 "owner": {"$in": fed_executive_owners},
                 "open": True,
             },
-            TICKET_PROJECTION
+            TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -61,7 +57,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "open": True,
             },
-            TICKET_PROJECTION
+            TICKET_PROJECTION,
         )
 
     tix = list(tix)
@@ -113,17 +109,17 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
     TICKET_PROJECTION = {
-            "_id": False,
-            "details.cve": True,
-            "details.kev": True,
-            "details.name": True,
-            "details.severity": True,
-            "ip": True,
-            "owner": True,
-            "port": True,
-            "time_closed": True,
-            "time_opened": True,
-        }
+        "_id": False,
+        "details.cve": True,
+        "details.kev": True,
+        "details.name": True,
+        "details.severity": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "time_closed": True,
+        "time_opened": True,
+    }
 
     if ticket_severity == "urgent":
         # "urgent" tickets meet at least one of the following criteria:
@@ -134,15 +130,11 @@ def get_closed_tickets_dataframe(db, ticket_severity):
             {
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
-                "$or":
-                    [
-                        {"details.kev": True},
-                        {"details.severity": {"$gte": 3}}
-                    ],
+                "$or": [{"details.kev": True}, {"details.severity": {"$gte": 3}}],
                 "owner": {"$in": fed_executive_owners},
                 "open": False,
             },
-            TICKET_PROJECTION
+            TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -154,7 +146,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "open": False,
             },
-            TICKET_PROJECTION
+            TICKET_PROJECTION,
         )
 
     tix = list(tix)
@@ -244,15 +236,10 @@ def csv_get_open_tickets(db, ticket_severity):
             "days_since_first_detected"
         ].round(decimals=1)
         results_df["days_since_first_reported"] = results_df[
-            "days_since_first_reported"].apply(
-                lambda x: round(x, 1)
-                if type(x) == float
-                else None
-            )
+            "days_since_first_reported"
+        ].apply(lambda x: round(x, 1) if type(x) == float else None)
         results_df["days_to_report"] = results_df["days_to_report"].apply(
-                lambda x: round(x, 1)
-                if type(x) == float
-                else None
+            lambda x: round(x, 1) if type(x) == float else None
         )
         response = results_df.to_csv(
             index=False,
