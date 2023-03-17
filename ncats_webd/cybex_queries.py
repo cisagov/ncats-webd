@@ -20,7 +20,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
     TICKET_PROJECTION = {
-        "_id": False,
+        "_id": True,
         "details.cve": True,
         "details.kev": True,
         "details.name": True,
@@ -109,7 +109,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
     TICKET_PROJECTION = {
-        "_id": False,
+        "_id": True,
         "details.cve": True,
         "details.kev": True,
         "details.name": True,
@@ -245,6 +245,7 @@ def csv_get_open_tickets(db, ticket_severity):
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
             columns=[
+                "id",
                 "owner",
                 "ip",
                 "port",
@@ -278,6 +279,7 @@ def csv_get_closed_tickets(db, ticket_severity):
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
             columns=[
+                "id",
                 "owner",
                 "ip",
                 "port",
