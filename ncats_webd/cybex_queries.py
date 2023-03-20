@@ -279,7 +279,7 @@ def csv_get_closed_tickets(db, ticket_severity):
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
             columns=[
-                "id",
+                "_id",
                 "owner",
                 "ip",
                 "port",
