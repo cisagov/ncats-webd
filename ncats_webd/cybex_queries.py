@@ -10,6 +10,25 @@ from cyhy.util import util
 
 TICKETS_CLOSED_PAST_DAYS = 30
 
+# For BOD 23-02, the Cyber Hygiene team defined a list of services that may
+# indicate potential publicly-accessible networked management interfaces that
+# should be protected.  This list of services may change in the future.  We map
+# each service to a category (e.g., FTP, SMB, etc.) for reporting.
+# The service names (keys in the dict below) come from the nmap services list:
+#  https://svn.nmap.org/nmap/nmap-services
+RISKY_SERVICES_MAP = {
+    "bftp": "FTP",
+    "ftp": "FTP",
+    "microsoft-ds": "SMB",
+    "ms-wbt-server": "RDP",
+    "ni-ftp": "FTP",
+    "rsftp": "FTP",
+    "rtelnet": "Telnet",
+    "smbdirect": "SMB",
+    "telnet": "Telnet",
+    "tftp": "FTP",
+}
+
 
 def get_open_tickets_dataframe(db, ticket_severity):
     now = util.utcnow()
