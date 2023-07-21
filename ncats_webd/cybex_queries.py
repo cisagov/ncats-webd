@@ -38,6 +38,16 @@ def get_open_tickets_dataframe(db, ticket_severity):
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
+    PORT_TICKET_PROJECTION = {
+        "_id": True,
+        "details.service": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "snapshots": True,
+        "time_opened": True,
+    }
+
     VULN_TICKET_PROJECTION = {
         "_id": True,
         "details.cve": True,
@@ -51,7 +61,20 @@ def get_open_tickets_dataframe(db, ticket_severity):
         "time_opened": True,
     }
 
-    if ticket_severity == "urgent":
+    if ticket_severity == "risky_services":
+        # "risky services" tickets have a service that is listed in the 
+        # RISKY_SERVICES_MAP
+        tix = db.TicketDoc.find(
+            {
+                "details.service": {"$in": RISKY_SERVICES_MAP.keys()},
+                "false_positive": False,
+                "open": True,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nmap",
+            },
+            PORT_TICKET_PROJECTION,
+         )
+    elif ticket_severity == "urgent":
         # "urgent" tickets meet at least one of the following criteria:
         #   KEV (Known Exploited Vulnerability) = true
         #   Critical (severity = 4)
@@ -114,6 +137,10 @@ def get_open_tickets_dataframe(db, ticket_severity):
         if x.get("snapshots"):
             del x["snapshots"]
 
+        # Look up and add category field for risky services tickets
+        if ticket_severity == "risky_services":
+            x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
     df = DataFrame(tix)
     if not df.empty:
         df.sort_values(by="days_since_first_detected", ascending=False, inplace=True)
@@ -126,6 +153,16 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     )
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
+
+    PORT_TICKET_PROJECTION = {
+        "_id": True,
+        "details.service": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "time_closed": True,
+        "time_opened": True,
+    }
 
     VULN_TICKET_PROJECTION = {
         "_id": True,
@@ -140,7 +177,20 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         "time_opened": True,
     }
 
-    if ticket_severity == "urgent":
+    if ticket_severity == "risky_services":
+        # "risky services" tickets have a service that is listed in the 
+        # RISKY_SERVICES_MAP
+        tix = db.TicketDoc.find(
+            {
+                "details.service": {"$in": RISKY_SERVICES_MAP.keys()},
+                "open": False,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nmap",
+                "time_closed": {"$gte": closed_since_date},
+            },
+            PORT_TICKET_PROJECTION,
+         )
+    elif ticket_severity == "urgent":
         # "urgent" tickets meet at least one of the following criteria:
         #   KEV (Known Exploited Vulnerability) = true
         #   Critical (severity = 4)
@@ -172,6 +222,11 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     for x in tix:
         x.update(x["details"])
         del x["details"]
+
+        # Look up and add category field for risky services tickets
+        if ticket_severity == "risky_services":
+            x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
     df = DataFrame(tix)
     if not df.empty:
         df["days_to_close"] = (
