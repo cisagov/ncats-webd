@@ -315,25 +315,45 @@ def csv_get_open_tickets(db, ticket_severity):
         results_df["days_to_report"] = results_df["days_to_report"].apply(
             lambda x: round(x, 1) if type(x) == float else None
         )
-        response = results_df.to_csv(
-            index=False,
-            date_format="%Y-%m-%d %H:%M:%S",
-            columns=[
-                "_id",
-                "owner",
-                "ip",
-                "port",
-                "name",
-                "cve",
-                "kev",
-                "severity",
-                "time_opened",
-                "days_since_first_detected",
-                "first_reported",
-                "days_since_first_reported",
-                "days_to_report",
-            ],
-        )
+
+        if ticket_severity == "risky_services":
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "service",
+                    "category",
+                    "time_opened",
+                    "days_since_first_detected",
+                    "first_reported",
+                    "days_since_first_reported",
+                    "days_to_report",
+                ]
+             )
+        else:
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "name",
+                    "cve",
+                    "kev",
+                    "severity",
+                    "time_opened",
+                    "days_since_first_detected",
+                    "first_reported",
+                    "days_since_first_reported",
+                    "days_to_report",
+                ]
+            )
     else:
         response = ""
     return response
@@ -349,23 +369,42 @@ def csv_get_closed_tickets(db, ticket_severity):
         results_df["time_closed"] = results_df["time_closed"].apply(
             lambda x: x.strftime("%Y-%m-%d %H:%M:%S")
         )  # excel crap
-        response = results_df.to_csv(
-            index=False,
-            date_format="%Y-%m-%d %H:%M:%S",
-            columns=[
-                "_id",
-                "owner",
-                "ip",
-                "port",
-                "name",
-                "cve",
-                "kev",
-                "severity",
-                "time_opened",
-                "time_closed",
-                "days_to_close",
-            ],
-        )
+
+
+        if ticket_severity == "risky_services":
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "service",
+                    "category",
+                    "time_opened",
+                    "time_closed",
+                    "days_to_close",
+                ],
+            )
+        else:
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "name",
+                    "cve",
+                    "kev",
+                    "severity",
+                    "time_opened",
+                    "time_closed",
+                    "days_to_close",
+                ],
+            )
     else:
         response = ""
     return response
