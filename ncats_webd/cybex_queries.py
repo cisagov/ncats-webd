@@ -38,7 +38,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
-    TICKET_PROJECTION = {
+    VULN_TICKET_PROJECTION = {
         "_id": True,
         "details.cve": True,
         "details.kev": True,
@@ -64,7 +64,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -76,7 +76,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
 
     tix = list(tix)
@@ -127,7 +127,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
-    TICKET_PROJECTION = {
+    VULN_TICKET_PROJECTION = {
         "_id": True,
         "details.cve": True,
         "details.kev": True,
@@ -153,7 +153,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -165,7 +165,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
 
     tix = list(tix)
