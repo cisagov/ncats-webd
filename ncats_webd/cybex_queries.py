@@ -11,7 +11,7 @@ from cyhy.util import util
 TICKETS_CLOSED_PAST_DAYS = 30
 
 # For BOD 23-02, the Cyber Hygiene team defined a list of services that may
-# indicate potential publicly-accessible networked management interfaces that
+# indicate potential publicly-accessible network management interfaces that
 # should be protected.  This list of services may change in the future.  We map
 # each service to a category (e.g., FTP, SMB, etc.) for reporting.
 # The service names (keys in the dict below) come from the nmap services list:
