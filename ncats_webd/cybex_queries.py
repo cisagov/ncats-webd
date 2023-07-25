@@ -15,7 +15,7 @@ TICKETS_CLOSED_PAST_DAYS = 30
 # should be protected.  This list of services may change in the future.  We map
 # each service to a category (e.g., FTP, SMB, etc.) for reporting.
 # The service names (keys in the dict below) come from the nmap services list:
-#  https://svn.nmap.org/nmap/nmap-services
+# https://svn.nmap.org/nmap/nmap-services
 RISKY_SERVICES_MAP = {
     "bftp": "FTP",
     "ftp": "FTP",
