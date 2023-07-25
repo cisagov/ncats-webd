@@ -10,6 +10,25 @@ from cyhy.util import util
 
 TICKETS_CLOSED_PAST_DAYS = 30
 
+# For BOD 23-02, the Cyber Hygiene team defined a list of services that may
+# indicate potential publicly-accessible network management interfaces that
+# should be protected.  This list of services may change in the future.  We map
+# each service to a category (e.g., FTP, SMB, etc.) for reporting.
+# The service names (keys in the dict below) come from the nmap services list:
+# https://svn.nmap.org/nmap/nmap-services
+RISKY_SERVICES_MAP = {
+    "bftp": "FTP",
+    "ftp": "FTP",
+    "microsoft-ds": "SMB",
+    "ms-wbt-server": "RDP",
+    "ni-ftp": "FTP",
+    "rsftp": "FTP",
+    "rtelnet": "Telnet",
+    "smbdirect": "SMB",
+    "telnet": "Telnet",
+    "tftp": "FTP",
+}
+
 
 def get_open_tickets_dataframe(db, ticket_severity):
     now = util.utcnow()
@@ -19,7 +38,17 @@ def get_open_tickets_dataframe(db, ticket_severity):
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
-    TICKET_PROJECTION = {
+    PORT_TICKET_PROJECTION = {
+        "_id": True,
+        "details.service": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "snapshots": True,
+        "time_opened": True,
+    }
+
+    VULN_TICKET_PROJECTION = {
         "_id": True,
         "details.cve": True,
         "details.kev": True,
@@ -32,7 +61,20 @@ def get_open_tickets_dataframe(db, ticket_severity):
         "time_opened": True,
     }
 
-    if ticket_severity == "urgent":
+    if ticket_severity == "risky_services":
+        # "risky services" tickets have a service that is listed in the 
+        # RISKY_SERVICES_MAP
+        tix = db.TicketDoc.find(
+            {
+                "details.service": {"$in": RISKY_SERVICES_MAP.keys()},
+                "false_positive": False,
+                "open": True,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nmap",
+            },
+            PORT_TICKET_PROJECTION,
+         )
+    elif ticket_severity == "urgent":
         # "urgent" tickets meet at least one of the following criteria:
         #   KEV (Known Exploited Vulnerability) = true
         #   Critical (severity = 4)
@@ -45,7 +87,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -57,7 +99,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
                 "owner": {"$in": fed_executive_owners},
                 "source": "nessus",
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
 
     tix = list(tix)
@@ -95,6 +137,10 @@ def get_open_tickets_dataframe(db, ticket_severity):
         if x.get("snapshots"):
             del x["snapshots"]
 
+        # Look up and add category field for risky services tickets
+        if ticket_severity == "risky_services":
+            x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
     df = DataFrame(tix)
     if not df.empty:
         df.sort_values(by="days_since_first_detected", ascending=False, inplace=True)
@@ -108,7 +154,17 @@ def get_closed_tickets_dataframe(db, ticket_severity):
 
     fed_executive_owners = db.RequestDoc.get_all_descendants("EXECUTIVE")
 
-    TICKET_PROJECTION = {
+    PORT_TICKET_PROJECTION = {
+        "_id": True,
+        "details.service": True,
+        "ip": True,
+        "owner": True,
+        "port": True,
+        "time_closed": True,
+        "time_opened": True,
+    }
+
+    VULN_TICKET_PROJECTION = {
         "_id": True,
         "details.cve": True,
         "details.kev": True,
@@ -121,7 +177,20 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         "time_opened": True,
     }
 
-    if ticket_severity == "urgent":
+    if ticket_severity == "risky_services":
+        # "risky services" tickets have a service that is listed in the 
+        # RISKY_SERVICES_MAP
+        tix = db.TicketDoc.find(
+            {
+                "details.service": {"$in": RISKY_SERVICES_MAP.keys()},
+                "open": False,
+                "owner": {"$in": fed_executive_owners},
+                "source": "nmap",
+                "time_closed": {"$gte": closed_since_date},
+            },
+            PORT_TICKET_PROJECTION,
+         )
+    elif ticket_severity == "urgent":
         # "urgent" tickets meet at least one of the following criteria:
         #   KEV (Known Exploited Vulnerability) = true
         #   Critical (severity = 4)
@@ -134,7 +203,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
     else:
         # Treat ticket_severity normally
@@ -146,13 +215,18 @@ def get_closed_tickets_dataframe(db, ticket_severity):
                 "source": "nessus",
                 "time_closed": {"$gte": closed_since_date},
             },
-            TICKET_PROJECTION,
+            VULN_TICKET_PROJECTION,
         )
 
     tix = list(tix)
     for x in tix:
         x.update(x["details"])
         del x["details"]
+
+        # Look up and add category field for risky services tickets
+        if ticket_severity == "risky_services":
+            x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
     df = DataFrame(tix)
     if not df.empty:
         df["days_to_close"] = (
@@ -241,25 +315,45 @@ def csv_get_open_tickets(db, ticket_severity):
         results_df["days_to_report"] = results_df["days_to_report"].apply(
             lambda x: round(x, 1) if type(x) == float else None
         )
-        response = results_df.to_csv(
-            index=False,
-            date_format="%Y-%m-%d %H:%M:%S",
-            columns=[
-                "_id",
-                "owner",
-                "ip",
-                "port",
-                "name",
-                "cve",
-                "kev",
-                "severity",
-                "time_opened",
-                "days_since_first_detected",
-                "first_reported",
-                "days_since_first_reported",
-                "days_to_report",
-            ],
-        )
+
+        if ticket_severity == "risky_services":
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "service",
+                    "category",
+                    "time_opened",
+                    "days_since_first_detected",
+                    "first_reported",
+                    "days_since_first_reported",
+                    "days_to_report",
+                ]
+             )
+        else:
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "name",
+                    "cve",
+                    "kev",
+                    "severity",
+                    "time_opened",
+                    "days_since_first_detected",
+                    "first_reported",
+                    "days_since_first_reported",
+                    "days_to_report",
+                ]
+            )
     else:
         response = ""
     return response
@@ -275,23 +369,42 @@ def csv_get_closed_tickets(db, ticket_severity):
         results_df["time_closed"] = results_df["time_closed"].apply(
             lambda x: x.strftime("%Y-%m-%d %H:%M:%S")
         )  # excel crap
-        response = results_df.to_csv(
-            index=False,
-            date_format="%Y-%m-%d %H:%M:%S",
-            columns=[
-                "_id",
-                "owner",
-                "ip",
-                "port",
-                "name",
-                "cve",
-                "kev",
-                "severity",
-                "time_opened",
-                "time_closed",
-                "days_to_close",
-            ],
-        )
+
+
+        if ticket_severity == "risky_services":
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "service",
+                    "category",
+                    "time_opened",
+                    "time_closed",
+                    "days_to_close",
+                ],
+            )
+        else:
+            response = results_df.to_csv(
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+                columns=[
+                    "_id",
+                    "owner",
+                    "ip",
+                    "port",
+                    "name",
+                    "cve",
+                    "kev",
+                    "severity",
+                    "time_opened",
+                    "time_closed",
+                    "days_to_close",
+                ],
+            )
     else:
         response = ""
     return response
