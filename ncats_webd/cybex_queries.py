@@ -115,6 +115,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
         )
 
     tix = list(tix)
+    ip_to_hostname = get_hostnames_of_tickets(db, tix)
     for x in tix:
         x.update(x["details"])
         del x["details"]
@@ -149,9 +150,10 @@ def get_open_tickets_dataframe(db, ticket_severity):
         if x.get("snapshots"):
             del x["snapshots"]
 
-        # Look up and add category field for risky services tickets
+        # Look up and add category and hostname fields for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+            x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
     if not df.empty:
@@ -231,13 +233,15 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         )
 
     tix = list(tix)
+    ip_to_hostname = get_hostnames_of_tickets(db, tix)
     for x in tix:
         x.update(x["details"])
         del x["details"]
 
-        # Look up and add category field for risky services tickets
+        # Look up and add category and hostname fields for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+            x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
     if not df.empty:
@@ -336,6 +340,7 @@ def csv_get_open_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "ip",
+                    "hostname",
                     "port",
                     "service",
                     "category",
@@ -391,6 +396,7 @@ def csv_get_closed_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "ip",
+                    "hostname",
                     "port",
                     "service",
                     "category",
