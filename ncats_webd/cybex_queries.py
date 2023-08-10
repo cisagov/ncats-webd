@@ -30,6 +30,18 @@ RISKY_SERVICES_MAP = {
 }
 
 
+def get_hostnames_of_tickets(db, tickets):
+    """Given a list of tickets, return a dict mapping ticket IP to hostname (if any) from latest host scan."""
+    ip_to_hostname = dict()
+    ticket_ip_ints = [int(ticket["ip"]) for ticket in tickets]
+    for host_scan in db.HostScanDoc.find({
+        "ip_int": {"$in": ticket_ip_ints},
+        "latest": True,
+    }):
+        ip_to_hostname[host_scan["ip"]] = host_scan.get("hostname", None)
+    return ip_to_hostname
+
+
 def get_open_tickets_dataframe(db, ticket_severity):
     now = util.utcnow()
     first_report_time_cache = (
