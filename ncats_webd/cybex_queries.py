@@ -30,6 +30,17 @@ RISKY_SERVICES_MAP = {
 }
 
 
+def get_hostnames_of_tickets(db, tickets):
+    """Given a list of tickets, return a dict mapping ticket IP to hostname (if any) from latest host scan."""
+    ip_to_hostname = dict()
+    ticket_ip_ints = [int(ticket["ip"]) for ticket in tickets]
+    for host_scan in db.HostScanDoc.find(
+        {"ip_int": {"$in": ticket_ip_ints}, "latest": True},
+        {"hostname": True, "ip": True}):
+        ip_to_hostname[host_scan["ip"]] = host_scan.get("hostname", None)
+    return ip_to_hostname
+
+
 def get_open_tickets_dataframe(db, ticket_severity):
     now = util.utcnow()
     first_report_time_cache = (
@@ -103,6 +114,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
         )
 
     tix = list(tix)
+    ip_to_hostname = get_hostnames_of_tickets(db, tix)
     for x in tix:
         x.update(x["details"])
         del x["details"]
@@ -137,9 +149,10 @@ def get_open_tickets_dataframe(db, ticket_severity):
         if x.get("snapshots"):
             del x["snapshots"]
 
-        # Look up and add category field for risky services tickets
+        # Look up and add category and hostname fields for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+            x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
     if not df.empty:
@@ -219,13 +232,15 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         )
 
     tix = list(tix)
+    ip_to_hostname = get_hostnames_of_tickets(db, tix)
     for x in tix:
         x.update(x["details"])
         del x["details"]
 
-        # Look up and add category field for risky services tickets
+        # Look up and add category and hostname fields for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+            x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
     if not df.empty:
@@ -324,6 +339,7 @@ def csv_get_open_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "ip",
+                    "hostname",
                     "port",
                     "service",
                     "category",
@@ -379,6 +395,7 @@ def csv_get_closed_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "ip",
+                    "hostname",
                     "port",
                     "service",
                     "category",
