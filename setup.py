@@ -31,7 +31,7 @@ setup(
         "gunicorn >= 19.6.0",
         "ipython",
         "netaddr >= 0.7.10",
-        "numpy == 1.16.2",
+        "numpy == 1.22.0",
         "pandas == 0.23.3",
         "python-dateutil >= 2.2",
         "python-engineio >= 3, < 3.14",
