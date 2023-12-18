@@ -34,7 +34,7 @@
     }
   },
   "dependencies": {
-    "jsdom": "~0.5.3"
+    "jsdom": "~16.6.0"
   },
   "devDependencies": {
     "smash": "~0.0.8",
