@@ -19,7 +19,11 @@ setup(
         "docopt >= 0.6.2",
         "flask >= 0.10.1",
         "Flask-Caching >= 1.4.0, < 1.8.0",
-        "Flask-Cors >= 2.1.0",
+        # The Flask-Cors package no longer support Python 2 as of version 4.0.0.
+        # However, the build process for the package is still producing wheels that
+        # are marked for Python 2 support. Please see the following issue for more
+        # information: https://github.com/corydolphin/flask-cors/issues/339
+        "Flask-Cors >= 2.1.0, < 4",
         "Flask-SocketIO >= 2.1, < 5",
         "Flask-Uploads >= 0.2.0",
         "gevent >= 1.2.0",
