@@ -40,11 +40,11 @@ def main():
         "debug",
         "--timeout",
         "90",
-        "-k",
+        "--worker-class",
         async_mode,
         "--worker-class",
         "geventwebsocket.gunicorn.workers.GeventWebSocketWorker",
-        "-w",
+        "--workers",
         "1",
     ]
 
