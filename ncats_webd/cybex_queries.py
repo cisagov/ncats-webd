@@ -52,6 +52,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
     PORT_TICKET_PROJECTION = {
         "_id": True,
         "details.service": True,
+        "hostname": True,
         "ip": True,
         "owner": True,
         "port": True,
@@ -66,6 +67,7 @@ def get_open_tickets_dataframe(db, ticket_severity):
         "details.kev_ransomware": True,
         "details.name": True,
         "details.severity": True,
+        "hostname": True,
         "ip": True,
         "owner": True,
         "port": True,
@@ -150,9 +152,13 @@ def get_open_tickets_dataframe(db, ticket_severity):
         if x.get("snapshots"):
             del x["snapshots"]
 
-        # Look up and add category and hostname fields for risky services tickets
+        # Add category field for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
+        # If hostname was not set in the ticket, attempt to look it up from the
+        # data in the host scan
+        if not x.get("hostname"):
             x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
@@ -171,6 +177,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
     PORT_TICKET_PROJECTION = {
         "_id": True,
         "details.service": True,
+        "hostname": True,
         "ip": True,
         "owner": True,
         "port": True,
@@ -185,6 +192,7 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         "details.kev_ransomware": True,
         "details.name": True,
         "details.severity": True,
+        "hostname": True,
         "ip": True,
         "owner": True,
         "port": True,
@@ -239,9 +247,13 @@ def get_closed_tickets_dataframe(db, ticket_severity):
         x.update(x["details"])
         del x["details"]
 
-        # Look up and add category and hostname fields for risky services tickets
+        # Add category field for risky services tickets
         if ticket_severity == "risky_services":
             x["category"] = RISKY_SERVICES_MAP[x["service"]]
+
+        # If hostname was not set in the ticket, attempt to look it up from the
+        # data in the host scan
+        if not x.get("hostname"):
             x["hostname"] = ip_to_hostname.get(x["ip"], None)
 
     df = DataFrame(tix)
@@ -340,8 +352,8 @@ def csv_get_open_tickets(db, ticket_severity):
                 columns=[
                     "_id",
                     "owner",
-                    "ip",
                     "hostname",
+                    "ip",
                     "port",
                     "service",
                     "category",
@@ -359,6 +371,7 @@ def csv_get_open_tickets(db, ticket_severity):
                 columns=[
                     "_id",
                     "owner",
+                    "hostname",
                     "ip",
                     "port",
                     "name",
@@ -397,8 +410,8 @@ def csv_get_closed_tickets(db, ticket_severity):
                 columns=[
                     "_id",
                     "owner",
-                    "ip",
                     "hostname",
+                    "ip",
                     "port",
                     "service",
                     "category",
@@ -414,6 +427,7 @@ def csv_get_closed_tickets(db, ticket_severity):
                 columns=[
                     "_id",
                     "owner",
+                    "hostname",
                     "ip",
                     "port",
                     "name",
