@@ -28,6 +28,7 @@ setup(
         "Flask-Uploads >= 0.2.0",
         "gevent >= 1.2.0",
         "gevent-websocket >= 0.9.5",
+        "greenlet < 2",
         "gunicorn >= 19.6.0",
         "ipython",
         "netaddr >= 0.7.10",
