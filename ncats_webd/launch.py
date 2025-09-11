@@ -29,7 +29,7 @@ import gunicorn.app.wsgiapp
 
 def main():
     global __doc__
-    args = docopt(__doc__, version="v0.0.2")
+    args = docopt(__doc__, version="v1.0.0")
 
     # Craft a replacement sys.argv for starting gunicorn
     patched_argv = [
