@@ -15,7 +15,7 @@ setup(
     # long_description=open('README.txt').read(),
     install_requires=[
         "cffi >= 1.12.2",
-        "cyhy-core >= 0.0.2",
+        "cyhy-core >= 1.1.5",
         "docopt >= 0.6.2",
         "flask >= 0.10.1",
         "Flask-Caching >= 1.4.0, < 1.8.0",
