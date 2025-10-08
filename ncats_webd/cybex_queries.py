@@ -158,8 +158,13 @@ def get_open_tickets_dataframe(db, ticket_severity):
 
         # If hostname was not set in the ticket, attempt to look it up from the
         # data in the host scan
+        x["hostname_source"] = "cyhy"  # Default until proven otherwise below
         if not x.get("hostname"):
             x["hostname"] = ip_to_hostname.get(x["ip"], None)
+            if x["hostname"]:
+                x["hostname_source"] = "nmap"
+            else:
+                x["hostname_source"] = None
 
     df = DataFrame(tix)
     if not df.empty:
@@ -253,8 +258,13 @@ def get_closed_tickets_dataframe(db, ticket_severity):
 
         # If hostname was not set in the ticket, attempt to look it up from the
         # data in the host scan
+        x["hostname_source"] = "cyhy"  # Default until proven otherwise below
         if not x.get("hostname"):
             x["hostname"] = ip_to_hostname.get(x["ip"], None)
+            if x["hostname"]:
+                x["hostname_source"] = "nmap"
+            else:
+                x["hostname_source"] = None
 
     df = DataFrame(tix)
     if not df.empty:
@@ -353,6 +363,7 @@ def csv_get_open_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "hostname",
+                    "hostname_source",
                     "ip",
                     "port",
                     "service",
@@ -372,6 +383,7 @@ def csv_get_open_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "hostname",
+                    "hostname_source",
                     "ip",
                     "port",
                     "name",
@@ -411,6 +423,7 @@ def csv_get_closed_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "hostname",
+                    "hostname_source",
                     "ip",
                     "port",
                     "service",
@@ -428,6 +441,7 @@ def csv_get_closed_tickets(db, ticket_severity):
                     "_id",
                     "owner",
                     "hostname",
+                    "hostname_source",
                     "ip",
                     "port",
                     "name",
